@@ -1,0 +1,364 @@
+{
+  "result": {
+    "model": "qwen2.5-coder:1.5b",
+    "wall_s": 22.0,
+    "overall": {
+      "n": 30,
+      "parse_rate": 1.0,
+      "valid_rate": 0.0,
+      "win_rate": 0.0,
+      "mean_vs_ref": null,
+      "mean_reward": -1.0
+    },
+    "breakdown": {
+      "heldout": {
+        "n": 2,
+        "parse_rate": 1.0,
+        "valid_rate": 0.0,
+        "win_rate": 0.0,
+        "mean_vs_ref": null,
+        "mean_reward": -1.0
+      },
+      "unseen": {
+        "n": 28,
+        "parse_rate": 1.0,
+        "valid_rate": 0.0,
+        "win_rate": 0.0,
+        "mean_vs_ref": null,
+        "mean_reward": -1.0
+      }
+    }
+  },
+  "rows": [
+    {
+      "tag": "unseen:B0",
+      "family": "const_add",
+      "band": "B0",
+      "valid": false,
+      "cost": null,
+      "ref_cost": 0.0,
+      "reason": "parse/validate: kind=CCX and q_target==q_control2==q0",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B0",
+      "family": "sbox",
+      "band": "B0",
+      "valid": false,
+      "cost": null,
+      "ref_cost": 0.0,
+      "reason": "parse/validate: bad integer 'T'",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B0",
+      "family": "gf2_linear",
+      "band": "B0",
+      "valid": false,
+      "cost": null,
+      "ref_cost": 0.0,
+      "reason": "parse/validate: bad integer 'T'",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B1",
+      "family": "const_add",
+      "band": "B1",
+      "valid": false,
+      "cost": null,
+      "ref_cost": 96.0,
+      "reason": "parse/validate: kind=CCX but q_control2 == NO_QUBIT",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B1",
+      "family": "controlled_addsub",
+      "band": "B1",
+      "valid": false,
+      "cost": 8.0,
+      "ref_cost": 170.0,
+      "reason": "classical_mismatch",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B1",
+      "family": "sbox",
+      "band": "B1",
+      "valid": false,
+      "cost": null,
+      "ref_cost": 96.0,
+      "reason": "parse/validate: kind=CCX but q_control2 == NO_QUBIT",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B1",
+      "family": "gf2_linear",
+      "band": "B1",
+      "valid": false,
+      "cost": null,
+      "ref_cost": 0.0,
+      "reason": "parse/validate: kind=CCX but q_control2 == NO_QUBIT",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B2",
+      "family": "reg_add",
+      "band": "B2",
+      "valid": false,
+      "cost": 65.0,
+      "ref_cost": 15314.0,
+      "reason": "classical_mismatch",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B2",
+      "family": "gf2_linear",
+      "band": "B2",
+      "valid": false,
+      "cost": null,
+      "ref_cost": 96.0,
+      "reason": "parse/validate: Failed to parse line 'APPEND_TO_REGISTER i r",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B2",
+      "family": "mod_mult",
+      "band": "B2",
+      "valid": false,
+      "cost": 8.0,
+      "ref_cost": 240.0,
+      "reason": "classical_mismatch",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B2",
+      "family": "const_add",
+      "band": "B2",
+      "valid": false,
+      "cost": null,
+      "ref_cost": 180.0,
+      "reason": "parse/validate: kind=CCX but q_control2 == NO_QUBIT",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B3",
+      "family": "mod_mult",
+      "band": "B3",
+      "valid": false,
+      "cost": 5.0,
+      "ref_cost": 609.0,
+      "reason": "classical_mismatch",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B3",
+      "family": "sbox",
+      "band": "B3",
+      "valid": false,
+      "cost": null,
+      "ref_cost": 966.0,
+      "reason": "parse/validate: kind=X but q_target == NO_QUBIT",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B3",
+      "family": "const_add",
+      "band": "B3",
+      "valid": false,
+      "cost": 5.0,
+      "ref_cost": 1183.0,
+      "reason": "classical_mismatch",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B4",
+      "family": "controlled_addsub",
+      "band": "B4",
+      "valid": false,
+      "cost": 20.0,
+      "ref_cost": 5104.0,
+      "reason": "classical_mismatch",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B4",
+      "family": "mod_mult",
+      "band": "B4",
+      "valid": false,
+      "cost": null,
+      "ref_cost": 783.0,
+      "reason": "parse/validate: kind=X but q_target == NO_QUBIT",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B4",
+      "family": "gf2_linear",
+      "band": "B4",
+      "valid": false,
+      "cost": 6.0,
+      "ref_cost": 3942.0,
+      "reason": "classical_mismatch",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B5",
+      "family": "mod_inverse",
+      "band": "B5",
+      "valid": false,
+      "cost": 6.0,
+      "ref_cost": 4383.0,
+      "reason": "classical_mismatch",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B5",
+      "family": "mod_mult",
+      "band": "B5",
+      "valid": false,
+      "cost": 5.0,
+      "ref_cost": 4158.0,
+      "reason": "classical_mismatch",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B6",
+      "family": "mod_inverse",
+      "band": "B6",
+      "valid": false,
+      "cost": null,
+      "ref_cost": 17875.0,
+      "reason": "parse/validate: kind=X but q_target == NO_QUBIT",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B6",
+      "family": "mod_mult",
+      "band": "B6",
+      "valid": false,
+      "cost": null,
+      "ref_cost": 18546.0,
+      "reason": "parse/validate: kind=X but q_target == NO_QUBIT",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B6",
+      "family": "sbox",
+      "band": "B6",
+      "valid": false,
+      "cost": null,
+      "ref_cost": 18546.0,
+      "reason": "parse/validate: kind=X but q_target == NO_QUBIT",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B0",
+      "family": "const_add",
+      "band": "B0",
+      "valid": false,
+      "cost": null,
+      "ref_cost": 0.0,
+      "reason": "parse/validate: kind=CCX and q_target==q_control2==q0",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B3",
+      "family": "mod_mult",
+      "band": "B3",
+      "valid": false,
+      "cost": 5.0,
+      "ref_cost": 133.0,
+      "reason": "classical_mismatch",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B4",
+      "family": "controlled_addsub",
+      "band": "B4",
+      "valid": false,
+      "cost": null,
+      "ref_cost": 2420.0,
+      "reason": "parse/validate: kind=X but q_target == NO_QUBIT",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B5",
+      "family": "mod_mult",
+      "band": "B5",
+      "valid": false,
+      "cost": 6.0,
+      "ref_cost": 4284.0,
+      "reason": "classical_mismatch",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B6",
+      "family": "mod_mult",
+      "band": "B6",
+      "valid": false,
+      "cost": 7.0,
+      "ref_cost": 17226.0,
+      "reason": "classical_mismatch",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B5",
+      "family": "mod_mult",
+      "band": "B5",
+      "valid": false,
+      "cost": null,
+      "ref_cost": 3474.0,
+      "reason": "parse/validate: kind=X but q_target == NO_QUBIT",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "heldout",
+      "family": "heldout_fma",
+      "band": "HELDOUT",
+      "valid": false,
+      "cost": 16.0,
+      "ref_cost": 2040.0,
+      "reason": "classical_mismatch",
+      "reward": -1.0,
+      "parsed": true
+    },
+    {
+      "tag": "heldout",
+      "family": "heldout_sbox6",
+      "band": "HELDOUT",
+      "valid": false,
+      "cost": 5.0,
+      "ref_cost": 4869.0,
+      "reason": "classical_mismatch",
+      "reward": -1.0,
+      "parsed": true
+    }
+  ]
+}

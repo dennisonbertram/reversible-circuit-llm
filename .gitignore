@@ -1,0 +1,30 @@
+# Model weights / artifacts — multi-GB, never on GitHub (publish to HF instead)
+artifacts/
+*.safetensors
+*.gguf
+*.bin
+
+# Rust build artifacts
+**/target/
+**/Cargo.lock
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# Large generated datasets — regenerate via the scripts / Modal fan-out
+data/sft_*.jsonl
+data/dpo_*.jsonl
+# keep the mined optimization-move corpus (small, valuable)
+!data/moves_raw.jsonl
+
+# Local run logs + Modal scratch
+infra/
+*.log
+
+# Secrets (never present in-tree, but belt-and-suspenders)
+.modal.toml
+*.pem
+*.key

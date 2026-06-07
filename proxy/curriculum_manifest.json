@@ -1,0 +1,1182 @@
+{
+  "generated_by": "tasks.py + build_curriculum.py",
+  "verifier": "proxy_env.verify (full 4-gate: correctness/reversibility/phase/ancilla)",
+  "python": "/usr/bin/python3",
+  "validation_summary": {
+    "instances_validated": 68,
+    "instances_failed": 0,
+    "n_per_family_sampled": 3,
+    "total_instances": 68,
+    "all_pass": true
+  },
+  "families": [
+    "const_add",
+    "reg_add",
+    "controlled_addsub",
+    "mod_mult",
+    "mod_inverse",
+    "sbox",
+    "gf2_linear"
+  ],
+  "bands": {
+    "B0": {
+      "n_in": 2,
+      "families": [
+        "const_add",
+        "sbox",
+        "gf2_linear"
+      ],
+      "example_instances": [
+        {
+          "family": "const_add",
+          "params": {
+            "n": 2,
+            "m": 3,
+            "a": 2
+          },
+          "in_qubits": [
+            0,
+            1
+          ],
+          "out_qubits": [
+            0,
+            1
+          ],
+          "n_in": 2,
+          "width": 2,
+          "max_width": 4,
+          "reference_toffoli": 0.0,
+          "reference_peak_width": 2,
+          "reference_cost": 0.0,
+          "reference_n_ops": 3,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        },
+        {
+          "family": "sbox",
+          "params": {
+            "n": 2,
+            "table": [
+              0,
+              2,
+              3,
+              1
+            ]
+          },
+          "in_qubits": [
+            0,
+            1
+          ],
+          "out_qubits": [
+            0,
+            1
+          ],
+          "n_in": 2,
+          "width": 2,
+          "max_width": 4,
+          "reference_toffoli": 0.0,
+          "reference_peak_width": 2,
+          "reference_cost": 0.0,
+          "reference_n_ops": 2,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        },
+        {
+          "family": "gf2_linear",
+          "params": {
+            "n": 2,
+            "M": [
+              3,
+              2
+            ]
+          },
+          "in_qubits": [
+            0,
+            1
+          ],
+          "out_qubits": [
+            0,
+            1
+          ],
+          "n_in": 2,
+          "width": 2,
+          "max_width": 4,
+          "reference_toffoli": 0.0,
+          "reference_peak_width": 2,
+          "reference_cost": 0.0,
+          "reference_n_ops": 1,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        }
+      ]
+    },
+    "B1": {
+      "n_in": 3,
+      "families": [
+        "const_add",
+        "controlled_addsub",
+        "sbox",
+        "gf2_linear"
+      ],
+      "example_instances": [
+        {
+          "family": "const_add",
+          "params": {
+            "n": 3,
+            "m": 7,
+            "a": 5
+          },
+          "in_qubits": [
+            0,
+            1,
+            2
+          ],
+          "out_qubits": [
+            0,
+            1,
+            2
+          ],
+          "n_in": 3,
+          "width": 3,
+          "max_width": 5,
+          "reference_toffoli": 32.0,
+          "reference_peak_width": 3,
+          "reference_cost": 96.0,
+          "reference_n_ops": 10,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        },
+        {
+          "family": "controlled_addsub",
+          "params": {
+            "n": 3,
+            "m": 7,
+            "a": 1,
+            "sub": false
+          },
+          "in_qubits": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "out_qubits": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "n_in": 4,
+          "width": 5,
+          "max_width": 7,
+          "reference_toffoli": 14.0,
+          "reference_peak_width": 5,
+          "reference_cost": 70.0,
+          "reference_n_ops": 8,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        },
+        {
+          "family": "sbox",
+          "params": {
+            "n": 3,
+            "table": [
+              3,
+              0,
+              4,
+              2,
+              5,
+              6,
+              1,
+              7
+            ]
+          },
+          "in_qubits": [
+            0,
+            1,
+            2
+          ],
+          "out_qubits": [
+            0,
+            1,
+            2
+          ],
+          "n_in": 3,
+          "width": 3,
+          "max_width": 5,
+          "reference_toffoli": 48.0,
+          "reference_peak_width": 3,
+          "reference_cost": 144.0,
+          "reference_n_ops": 13,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        },
+        {
+          "family": "gf2_linear",
+          "params": {
+            "n": 3,
+            "M": [
+              3,
+              1,
+              4
+            ]
+          },
+          "in_qubits": [
+            0,
+            1,
+            2
+          ],
+          "out_qubits": [
+            0,
+            1,
+            2
+          ],
+          "n_in": 3,
+          "width": 3,
+          "max_width": 5,
+          "reference_toffoli": 0.0,
+          "reference_peak_width": 2,
+          "reference_cost": 0.0,
+          "reference_n_ops": 2,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        }
+      ]
+    },
+    "B2": {
+      "n_in": 4,
+      "families": [
+        "reg_add",
+        "gf2_linear",
+        "mod_mult",
+        "const_add"
+      ],
+      "example_instances": [
+        {
+          "family": "reg_add",
+          "params": {
+            "n": 4,
+            "m": 16
+          },
+          "in_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "out_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "n_in": 8,
+          "width": 9,
+          "max_width": 11,
+          "reference_toffoli": 8.0,
+          "reference_peak_width": 9,
+          "reference_cost": 72.0,
+          "reference_n_ops": 24,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        },
+        {
+          "family": "gf2_linear",
+          "params": {
+            "n": 4,
+            "M": [
+              14,
+              11,
+              10,
+              6
+            ]
+          },
+          "in_qubits": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "out_qubits": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "n_in": 4,
+          "width": 4,
+          "max_width": 6,
+          "reference_toffoli": 0.0,
+          "reference_peak_width": 4,
+          "reference_cost": 0.0,
+          "reference_n_ops": 7,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        },
+        {
+          "family": "mod_mult",
+          "params": {
+            "n": 4,
+            "m": 11,
+            "k": 10
+          },
+          "in_qubits": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "out_qubits": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "n_in": 4,
+          "width": 5,
+          "max_width": 7,
+          "reference_toffoli": 34.0,
+          "reference_peak_width": 5,
+          "reference_cost": 170.0,
+          "reference_n_ops": 22,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        },
+        {
+          "family": "const_add",
+          "params": {
+            "n": 4,
+            "m": 13,
+            "a": 5
+          },
+          "in_qubits": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "out_qubits": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "n_in": 4,
+          "width": 5,
+          "max_width": 7,
+          "reference_toffoli": 22.0,
+          "reference_peak_width": 5,
+          "reference_cost": 110.0,
+          "reference_n_ops": 17,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        }
+      ]
+    },
+    "B3": {
+      "n_in": 5,
+      "families": [
+        "mod_mult",
+        "sbox",
+        "const_add"
+      ],
+      "example_instances": [
+        {
+          "family": "mod_mult",
+          "params": {
+            "n": 5,
+            "m": 31,
+            "k": 13
+          },
+          "in_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "out_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "n_in": 5,
+          "width": 7,
+          "max_width": 9,
+          "reference_toffoli": 106.0,
+          "reference_peak_width": 7,
+          "reference_cost": 742.0,
+          "reference_n_ops": 119,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        },
+        {
+          "family": "sbox",
+          "params": {
+            "n": 5,
+            "table": [
+              0,
+              6,
+              5,
+              29,
+              20,
+              15,
+              24,
+              27,
+              30,
+              18,
+              4,
+              17,
+              13,
+              28,
+              26,
+              14,
+              10,
+              19,
+              16,
+              21,
+              22,
+              31,
+              9,
+              1,
+              11,
+              25,
+              3,
+              7,
+              2,
+              12,
+              8,
+              23
+            ]
+          },
+          "in_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "out_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "n_in": 5,
+          "width": 7,
+          "max_width": 9,
+          "reference_toffoli": 136.0,
+          "reference_peak_width": 7,
+          "reference_cost": 952.0,
+          "reference_n_ops": 146,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        },
+        {
+          "family": "const_add",
+          "params": {
+            "n": 5,
+            "m": 31,
+            "a": 27
+          },
+          "in_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "out_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "n_in": 5,
+          "width": 7,
+          "max_width": 9,
+          "reference_toffoli": 70.0,
+          "reference_peak_width": 7,
+          "reference_cost": 490.0,
+          "reference_n_ops": 82,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        }
+      ]
+    },
+    "B4": {
+      "n_in": 6,
+      "families": [
+        "controlled_addsub",
+        "mod_mult",
+        "gf2_linear"
+      ],
+      "example_instances": [
+        {
+          "family": "controlled_addsub",
+          "params": {
+            "n": 6,
+            "m": 59,
+            "a": 52,
+            "sub": true
+          },
+          "in_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "out_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "n_in": 7,
+          "width": 11,
+          "max_width": 13,
+          "reference_toffoli": 215.0,
+          "reference_peak_width": 11,
+          "reference_cost": 2365.0,
+          "reference_n_ops": 218,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        },
+        {
+          "family": "mod_mult",
+          "params": {
+            "n": 6,
+            "m": 61,
+            "k": 46
+          },
+          "in_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "out_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "n_in": 6,
+          "width": 9,
+          "max_width": 11,
+          "reference_toffoli": 529.0,
+          "reference_peak_width": 9,
+          "reference_cost": 4761.0,
+          "reference_n_ops": 549,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        },
+        {
+          "family": "gf2_linear",
+          "params": {
+            "n": 6,
+            "M": [
+              27,
+              54,
+              37,
+              38,
+              58,
+              55
+            ]
+          },
+          "in_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "out_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "n_in": 6,
+          "width": 9,
+          "max_width": 11,
+          "reference_toffoli": 469.0,
+          "reference_peak_width": 9,
+          "reference_cost": 4221.0,
+          "reference_n_ops": 488,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        }
+      ]
+    },
+    "B5": {
+      "n_in": 6,
+      "families": [
+        "mod_inverse",
+        "mod_mult"
+      ],
+      "example_instances": [
+        {
+          "family": "mod_inverse",
+          "params": {
+            "n": 6,
+            "m": 61
+          },
+          "in_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "out_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "n_in": 6,
+          "width": 9,
+          "max_width": 11,
+          "reference_toffoli": 487.0,
+          "reference_peak_width": 9,
+          "reference_cost": 4383.0,
+          "reference_n_ops": 503,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        },
+        {
+          "family": "mod_mult",
+          "params": {
+            "n": 6,
+            "m": 61,
+            "k": 23
+          },
+          "in_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "out_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "n_in": 6,
+          "width": 9,
+          "max_width": 11,
+          "reference_toffoli": 447.0,
+          "reference_peak_width": 9,
+          "reference_cost": 4023.0,
+          "reference_n_ops": 465,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        }
+      ]
+    },
+    "B6": {
+      "n_in": 7,
+      "families": [
+        "mod_inverse",
+        "mod_mult",
+        "sbox"
+      ],
+      "example_instances": [
+        {
+          "family": "mod_inverse",
+          "params": {
+            "n": 7,
+            "m": 127
+          },
+          "in_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "out_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "n_in": 7,
+          "width": 11,
+          "max_width": 13,
+          "reference_toffoli": 1625.0,
+          "reference_peak_width": 11,
+          "reference_cost": 17875.0,
+          "reference_n_ops": 1634,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        },
+        {
+          "family": "mod_mult",
+          "params": {
+            "n": 7,
+            "m": 113,
+            "k": 64
+          },
+          "in_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "out_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "n_in": 7,
+          "width": 11,
+          "max_width": 13,
+          "reference_toffoli": 1682.0,
+          "reference_peak_width": 11,
+          "reference_cost": 18502.0,
+          "reference_n_ops": 1707,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        },
+        {
+          "family": "sbox",
+          "params": {
+            "n": 7,
+            "table": [
+              71,
+              33,
+              108,
+              20,
+              52,
+              86,
+              100,
+              13,
+              106,
+              42,
+              68,
+              4,
+              30,
+              116,
+              46,
+              7,
+              16,
+              62,
+              22,
+              127,
+              119,
+              26,
+              75,
+              32,
+              99,
+              101,
+              70,
+              55,
+              43,
+              80,
+              59,
+              113,
+              77,
+              79,
+              49,
+              126,
+              48,
+              118,
+              25,
+              69,
+              90,
+              39,
+              117,
+              96,
+              28,
+              88,
+              11,
+              66,
+              8,
+              47,
+              83,
+              84,
+              92,
+              110,
+              24,
+              109,
+              51,
+              9,
+              10,
+              105,
+              97,
+              98,
+              12,
+              74,
+              57,
+              124,
+              34,
+              37,
+              115,
+              41,
+              111,
+              73,
+              125,
+              14,
+              45,
+              102,
+              50,
+              64,
+              121,
+              3,
+              78,
+              112,
+              122,
+              27,
+              65,
+              35,
+              19,
+              95,
+              36,
+              67,
+              6,
+              40,
+              2,
+              91,
+              44,
+              38,
+              93,
+              85,
+              18,
+              60,
+              72,
+              1,
+              17,
+              15,
+              82,
+              56,
+              120,
+              103,
+              87,
+              61,
+              63,
+              94,
+              107,
+              76,
+              5,
+              123,
+              23,
+              114,
+              81,
+              21,
+              89,
+              54,
+              29,
+              31,
+              104,
+              53,
+              58,
+              0
+            ]
+          },
+          "in_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "out_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "n_in": 7,
+          "width": 11,
+          "max_width": 13,
+          "reference_toffoli": 1691.0,
+          "reference_peak_width": 11,
+          "reference_cost": 18601.0,
+          "reference_n_ops": 1717,
+          "validation": {
+            "valid": true,
+            "reason": "ok",
+            "frac_correct": 1.0,
+            "frac_ancilla_clean": 1.0
+          }
+        }
+      ]
+    }
+  },
+  "heldout": [
+    {
+      "family": "heldout_fma",
+      "params": {
+        "n": 2,
+        "m": 3
+      },
+      "in_qubits": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "out_qubits": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "n_in": 6,
+      "width": 12,
+      "reference_toffoli": 170.0,
+      "reference_peak_width": 12,
+      "reference_cost": 2040.0,
+      "validation": {
+        "valid": true,
+        "reason": "ok",
+        "frac_correct": 1.0,
+        "frac_ancilla_clean": 1.0
+      },
+      "note": "HELD-OUT generalization probe \u2014 validated, NEVER used in training."
+    },
+    {
+      "family": "heldout_sbox6",
+      "params": {
+        "n": 6,
+        "table": [
+          43,
+          11,
+          47,
+          42,
+          22,
+          12,
+          0,
+          59,
+          23,
+          9,
+          14,
+          58,
+          39,
+          54,
+          24,
+          41,
+          1,
+          27,
+          33,
+          49,
+          15,
+          36,
+          50,
+          62,
+          6,
+          63,
+          44,
+          28,
+          38,
+          7,
+          31,
+          26,
+          45,
+          30,
+          16,
+          37,
+          56,
+          4,
+          13,
+          2,
+          55,
+          57,
+          10,
+          51,
+          40,
+          34,
+          48,
+          21,
+          35,
+          17,
+          19,
+          29,
+          60,
+          8,
+          25,
+          32,
+          3,
+          20,
+          53,
+          46,
+          61,
+          18,
+          52,
+          5
+        ]
+      },
+      "in_qubits": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "out_qubits": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "n_in": 6,
+      "width": 9,
+      "reference_toffoli": 541.0,
+      "reference_peak_width": 9,
+      "reference_cost": 4869.0,
+      "validation": {
+        "valid": true,
+        "reason": "ok",
+        "frac_correct": 1.0,
+        "frac_ancilla_clean": 1.0
+      },
+      "note": "HELD-OUT generalization probe \u2014 validated, NEVER used in training."
+    }
+  ],
+  "failures": []
+}

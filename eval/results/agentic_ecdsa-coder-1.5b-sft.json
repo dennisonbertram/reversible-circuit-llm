@@ -1,0 +1,620 @@
+{
+  "result": {
+    "model": "ecdsa-coder-1.5b-sft",
+    "wall_s": 2017.2,
+    "n_tasks": 30,
+    "config": {
+      "per_band": 4,
+      "n_samples": 8,
+      "max_turns": 4,
+      "oneshot_temp": 0.2
+    },
+    "oneshot": {
+      "overall": {
+        "n": 30,
+        "valid_rate": 0.0,
+        "win_rate": 0.0,
+        "mean_vs_ref": null,
+        "mean_turns_to_solve": null,
+        "n_valid": 0,
+        "n_wins": 0
+      },
+      "by_group": {
+        "heldout": {
+          "n": 2,
+          "valid_rate": 0.0,
+          "win_rate": 0.0,
+          "mean_vs_ref": null,
+          "mean_turns_to_solve": null,
+          "n_valid": 0,
+          "n_wins": 0
+        },
+        "unseen": {
+          "n": 28,
+          "valid_rate": 0.0,
+          "win_rate": 0.0,
+          "mean_vs_ref": null,
+          "mean_turns_to_solve": null,
+          "n_valid": 0,
+          "n_wins": 0
+        }
+      }
+    },
+    "agentic": {
+      "overall": {
+        "n": 30,
+        "valid_rate": 0.0,
+        "win_rate": 0.0,
+        "mean_vs_ref": null,
+        "mean_turns_to_solve": null,
+        "n_valid": 0,
+        "n_wins": 0
+      },
+      "by_group": {
+        "heldout": {
+          "n": 2,
+          "valid_rate": 0.0,
+          "win_rate": 0.0,
+          "mean_vs_ref": null,
+          "mean_turns_to_solve": null,
+          "n_valid": 0,
+          "n_wins": 0
+        },
+        "unseen": {
+          "n": 28,
+          "valid_rate": 0.0,
+          "win_rate": 0.0,
+          "mean_vs_ref": null,
+          "mean_turns_to_solve": null,
+          "n_valid": 0,
+          "n_wins": 0
+        }
+      }
+    }
+  },
+  "oneshot_rows": [
+    {
+      "task_id": "0:const_add",
+      "tag": "unseen:B0",
+      "family": "const_add",
+      "valid": false,
+      "cost": 48.0,
+      "reason": "classical_mismatch",
+      "turns": 0
+    },
+    {
+      "task_id": "1:sbox",
+      "tag": "unseen:B0",
+      "family": "sbox",
+      "valid": false,
+      "cost": null,
+      "reason": "parse/validate: kind=CCX and q_target==q_control1==q1",
+      "turns": 0
+    },
+    {
+      "task_id": "2:gf2_linear",
+      "tag": "unseen:B0",
+      "family": "gf2_linear",
+      "valid": false,
+      "cost": null,
+      "reason": "parse/validate: kind=CCX and q_target==q_control1==q1",
+      "turns": 0
+    },
+    {
+      "task_id": "3:const_add",
+      "tag": "unseen:B1",
+      "family": "const_add",
+      "valid": false,
+      "cost": 120.0,
+      "reason": "classical_mismatch",
+      "turns": 0
+    },
+    {
+      "task_id": "4:controlled_addsub",
+      "tag": "unseen:B1",
+      "family": "controlled_addsub",
+      "valid": false,
+      "cost": null,
+      "reason": "parse/validate: bad integer ''",
+      "turns": 0
+    },
+    {
+      "task_id": "5:sbox",
+      "tag": "unseen:B1",
+      "family": "sbox",
+      "valid": false,
+      "cost": 96.0,
+      "reason": "classical_mismatch",
+      "turns": 0
+    },
+    {
+      "task_id": "6:gf2_linear",
+      "tag": "unseen:B1",
+      "family": "gf2_linear",
+      "valid": false,
+      "cost": 144.0,
+      "reason": "classical_mismatch",
+      "turns": 0
+    },
+    {
+      "task_id": "7:reg_add",
+      "tag": "unseen:B2",
+      "family": "reg_add",
+      "valid": false,
+      "cost": 832.0,
+      "reason": "classical_mismatch",
+      "turns": 0
+    },
+    {
+      "task_id": "8:gf2_linear",
+      "tag": "unseen:B2",
+      "family": "gf2_linear",
+      "valid": false,
+      "cost": 256.0,
+      "reason": "classical_mismatch",
+      "turns": 0
+    },
+    {
+      "task_id": "9:mod_mult",
+      "tag": "unseen:B2",
+      "family": "mod_mult",
+      "valid": false,
+      "cost": null,
+      "reason": "parse/validate: bad integer ''",
+      "turns": 0
+    },
+    {
+      "task_id": "10:const_add",
+      "tag": "unseen:B2",
+      "family": "const_add",
+      "valid": false,
+      "cost": null,
+      "reason": "parse/validate: bad integer ''",
+      "turns": 0
+    },
+    {
+      "task_id": "11:mod_mult",
+      "tag": "unseen:B3",
+      "family": "mod_mult",
+      "valid": false,
+      "cost": null,
+      "reason": "parse/validate: kind=CCX and q_target==q_control2==q4",
+      "turns": 0
+    },
+    {
+      "task_id": "12:sbox",
+      "tag": "unseen:B3",
+      "family": "sbox",
+      "valid": false,
+      "cost": null,
+      "reason": "parse/validate: kind=CCX but q_control1 == NO_QUBIT",
+      "turns": 0
+    },
+    {
+      "task_id": "13:const_add",
+      "tag": "unseen:B3",
+      "family": "const_add",
+      "valid": false,
+      "cost": null,
+      "reason": "parse/validate: bad integer ''",
+      "turns": 0
+    },
+    {
+      "task_id": "14:controlled_addsub",
+      "tag": "unseen:B4",
+      "family": "controlled_addsub",
+      "valid": false,
+      "cost": 913.0,
+      "reason": "classical_mismatch",
+      "turns": 0
+    },
+    {
+      "task_id": "15:mod_mult",
+      "tag": "unseen:B4",
+      "family": "mod_mult",
+      "valid": false,
+      "cost": null,
+      "reason": "parse/validate: bad integer ''",
+      "turns": 0
+    },
+    {
+      "task_id": "16:gf2_linear",
+      "tag": "unseen:B4",
+      "family": "gf2_linear",
+      "valid": false,
+      "cost": null,
+      "reason": "parse/validate: bad integer ''",
+      "turns": 0
+    },
+    {
+      "task_id": "17:mod_inverse",
+      "tag": "unseen:B5",
+      "family": "mod_inverse",
+      "valid": false,
+      "cost": null,
+      "reason": "parse/validate: kind=CCX but q_control1 == NO_QUBIT",
+      "turns": 0
+    },
+    {
+      "task_id": "18:mod_mult",
+      "tag": "unseen:B5",
+      "family": "mod_mult",
+      "valid": false,
+      "cost": null,
+      "reason": "parse/validate: bad integer ''",
+      "turns": 0
+    },
+    {
+      "task_id": "19:mod_inverse",
+      "tag": "unseen:B6",
+      "family": "mod_inverse",
+      "valid": false,
+      "cost": 308.0,
+      "reason": "classical_mismatch",
+      "turns": 0
+    },
+    {
+      "task_id": "20:mod_mult",
+      "tag": "unseen:B6",
+      "family": "mod_mult",
+      "valid": false,
+      "cost": null,
+      "reason": "parse/validate: bad integer ''",
+      "turns": 0
+    },
+    {
+      "task_id": "21:sbox",
+      "tag": "unseen:B6",
+      "family": "sbox",
+      "valid": false,
+      "cost": null,
+      "reason": "parse/validate: bad integer ''",
+      "turns": 0
+    },
+    {
+      "task_id": "22:const_add",
+      "tag": "unseen:B0",
+      "family": "const_add",
+      "valid": false,
+      "cost": 48.0,
+      "reason": "classical_mismatch",
+      "turns": 0
+    },
+    {
+      "task_id": "23:mod_mult",
+      "tag": "unseen:B3",
+      "family": "mod_mult",
+      "valid": false,
+      "cost": null,
+      "reason": "parse/validate: bad integer ''",
+      "turns": 0
+    },
+    {
+      "task_id": "24:controlled_addsub",
+      "tag": "unseen:B4",
+      "family": "controlled_addsub",
+      "valid": false,
+      "cost": null,
+      "reason": "parse/validate: kind=CCX but q_control1 == NO_QUBIT",
+      "turns": 0
+    },
+    {
+      "task_id": "25:mod_mult",
+      "tag": "unseen:B5",
+      "family": "mod_mult",
+      "valid": false,
+      "cost": 603.0,
+      "reason": "classical_mismatch",
+      "turns": 0
+    },
+    {
+      "task_id": "26:mod_mult",
+      "tag": "unseen:B6",
+      "family": "mod_mult",
+      "valid": false,
+      "cost": null,
+      "reason": "parse/validate: bad integer ''",
+      "turns": 0
+    },
+    {
+      "task_id": "27:mod_mult",
+      "tag": "unseen:B5",
+      "family": "mod_mult",
+      "valid": false,
+      "cost": null,
+      "reason": "parse/validate: bad integer ''",
+      "turns": 0
+    },
+    {
+      "task_id": "28:heldout_fma",
+      "tag": "heldout",
+      "family": "heldout_fma",
+      "valid": false,
+      "cost": null,
+      "reason": "parse/validate: bad integer ''",
+      "turns": 0
+    },
+    {
+      "task_id": "29:heldout_sbox6",
+      "tag": "heldout",
+      "family": "heldout_sbox6",
+      "valid": false,
+      "cost": null,
+      "reason": "parse/validate: bad integer ''",
+      "turns": 0
+    }
+  ],
+  "agentic_rows": [
+    {
+      "task_id": "0:const_add",
+      "tag": "unseen:B0",
+      "family": "const_add",
+      "valid": false,
+      "cost": 120.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "1:sbox",
+      "tag": "unseen:B0",
+      "family": "sbox",
+      "valid": false,
+      "cost": 24.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "2:gf2_linear",
+      "tag": "unseen:B0",
+      "family": "gf2_linear",
+      "valid": false,
+      "cost": 24.0,
+      "reason": "ancilla_garbage",
+      "turns": 4
+    },
+    {
+      "task_id": "3:const_add",
+      "tag": "unseen:B1",
+      "family": "const_add",
+      "valid": false,
+      "cost": 120.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "4:controlled_addsub",
+      "tag": "unseen:B1",
+      "family": "controlled_addsub",
+      "valid": false,
+      "cost": 150.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "5:sbox",
+      "tag": "unseen:B1",
+      "family": "sbox",
+      "valid": false,
+      "cost": 24.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "6:gf2_linear",
+      "tag": "unseen:B1",
+      "family": "gf2_linear",
+      "valid": false,
+      "cost": 72.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "7:reg_add",
+      "tag": "unseen:B2",
+      "family": "reg_add",
+      "valid": false,
+      "cost": 208.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "8:gf2_linear",
+      "tag": "unseen:B2",
+      "family": "gf2_linear",
+      "valid": false,
+      "cost": 160.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "9:mod_mult",
+      "tag": "unseen:B2",
+      "family": "mod_mult",
+      "valid": false,
+      "cost": 50.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "10:const_add",
+      "tag": "unseen:B2",
+      "family": "const_add",
+      "valid": false,
+      "cost": 60.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "11:mod_mult",
+      "tag": "unseen:B3",
+      "family": "mod_mult",
+      "valid": false,
+      "cost": 189.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "12:sbox",
+      "tag": "unseen:B3",
+      "family": "sbox",
+      "valid": false,
+      "cost": 259.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "13:const_add",
+      "tag": "unseen:B3",
+      "family": "const_add",
+      "valid": false,
+      "cost": 140.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "14:controlled_addsub",
+      "tag": "unseen:B4",
+      "family": "controlled_addsub",
+      "valid": false,
+      "cost": 1232.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "15:mod_mult",
+      "tag": "unseen:B4",
+      "family": "mod_mult",
+      "valid": false,
+      "cost": 96.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "16:gf2_linear",
+      "tag": "unseen:B4",
+      "family": "gf2_linear",
+      "valid": false,
+      "cost": 64.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "17:mod_inverse",
+      "tag": "unseen:B5",
+      "family": "mod_inverse",
+      "valid": false,
+      "cost": 378.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "18:mod_mult",
+      "tag": "unseen:B5",
+      "family": "mod_mult",
+      "valid": false,
+      "cost": 126.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "19:mod_inverse",
+      "tag": "unseen:B6",
+      "family": "mod_inverse",
+      "valid": false,
+      "cost": 64.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "20:mod_mult",
+      "tag": "unseen:B6",
+      "family": "mod_mult",
+      "valid": false,
+      "cost": 451.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "21:sbox",
+      "tag": "unseen:B6",
+      "family": "sbox",
+      "valid": false,
+      "cost": 340.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "22:const_add",
+      "tag": "unseen:B0",
+      "family": "const_add",
+      "valid": false,
+      "cost": 80.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "23:mod_mult",
+      "tag": "unseen:B3",
+      "family": "mod_mult",
+      "valid": false,
+      "cost": 426.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "24:controlled_addsub",
+      "tag": "unseen:B4",
+      "family": "controlled_addsub",
+      "valid": false,
+      "cost": 80.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "25:mod_mult",
+      "tag": "unseen:B5",
+      "family": "mod_mult",
+      "valid": false,
+      "cost": 126.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "26:mod_mult",
+      "tag": "unseen:B6",
+      "family": "mod_mult",
+      "valid": false,
+      "cost": 330.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "27:mod_mult",
+      "tag": "unseen:B5",
+      "family": "mod_mult",
+      "valid": false,
+      "cost": 126.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "28:heldout_fma",
+      "tag": "heldout",
+      "family": "heldout_fma",
+      "valid": false,
+      "cost": 30.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    },
+    {
+      "task_id": "29:heldout_sbox6",
+      "tag": "heldout",
+      "family": "heldout_sbox6",
+      "valid": false,
+      "cost": 24.0,
+      "reason": "classical_mismatch",
+      "turns": 4
+    }
+  ],
+  "example_transcript": null
+}

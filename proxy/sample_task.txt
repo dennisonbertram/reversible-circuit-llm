@@ -1,0 +1,130 @@
+==============================================================================
+SAMPLE PROXY TASK — rendered prompt + reference op-stream + verifier verdict
+==============================================================================
+
+----- MODEL-FACING PROMPT -----
+TASK family=mod_mult band=B3 n_in=5
+Small modular multiply by a unit: f(x) = (5 * x) mod 31 on the 5-qubit register (a permutation of Z_31; states >= 31 fixed). In place.
+
+REGISTER LAYOUT (declared by the environment; qubit indices):
+  total width W = 7 qubits (indices 0..6)
+  input  register qubits : [0, 1, 2, 3, 4]
+  output register qubits : [0, 1, 2, 3, 4]
+  hard width cap         : 9 (peak_width must not exceed)
+  REGISTER r0   # INPUT register
+  APPEND_TO_REGISTER q0 r0
+  APPEND_TO_REGISTER q1 r0
+  APPEND_TO_REGISTER q2 r0
+  APPEND_TO_REGISTER q3 r0
+  APPEND_TO_REGISTER q4 r0
+  # (output register == input register; in-place task)
+  # ancilla qubits (start and MUST end |0>): [5, 6]
+
+REFERENCE COST TO BEAT: 490  (= reference Toffoli x peak_width). Strictly cheaper wins; a tie does not.
+
+OP-STREAM RULES (harness DSL, one op per line):
+  X qT                 # NOT (FREE)
+  CX qC qT             # CNOT (clifford, free of Toffoli cost)
+  CCX qC1 qC2 qT       # Toffoli  (THE cost lever: +1 per CCX)
+  SWAP qA qB           # exchange (clifford)
+  Z/CZ/CCZ, BIT_* , ... if bM   # phase / classical-bit / conditioned ops
+Cost = (avg Toffoli over inputs) x peak_width, where peak_width = max qubit index + 1.
+X/CX/SWAP/Z are free; only CCX/CCZ cost. Lower cost is better; a strict improvement
+over the reference cost wins (a tie does not). The circuit MUST: compute the target
+function on the input register for every input, be reversible (a full-state bijection),
+keep phase = 0, and return every ancilla qubit to |0>. No operand may alias
+(target != control1 != control2). Emit ONLY op lines, no commentary.
+
+Emit the op-stream body now:
+
+----- REFERENCE OP-STREAM (baseline to beat) -----
+CCX q2 q3 q5
+CCX q4 q5 q0
+CCX q2 q3 q5
+CCX q0 q1 q5
+CCX q3 q5 q6
+CCX q4 q6 q2
+CCX q3 q5 q6
+CCX q0 q1 q5
+CCX q0 q3 q5
+CCX q4 q5 q2
+CCX q0 q3 q5
+CCX q2 q3 q5
+CCX q4 q5 q0
+CCX q2 q3 q5
+CCX q3 q4 q1
+CCX q3 q4 q0
+CCX q0 q2 q5
+CCX q4 q5 q1
+CCX q0 q2 q5
+CCX q2 q4 q1
+CCX q2 q4 q0
+CCX q0 q1 q5
+CCX q4 q5 q2
+CCX q0 q1 q5
+CCX q1 q4 q2
+CCX q0 q4 q1
+CX q4 q3
+CX q4 q2
+CX q4 q1
+CCX q0 q1 q5
+CCX q2 q5 q6
+CCX q3 q6 q4
+CCX q2 q5 q6
+CCX q0 q1 q5
+CCX q0 q2 q5
+CCX q3 q5 q6
+CCX q4 q6 q1
+CCX q3 q5 q6
+CCX q0 q2 q5
+CCX q2 q3 q5
+CCX q4 q5 q0
+CCX q2 q3 q5
+CCX q1 q2 q5
+CCX q3 q5 q4
+CCX q1 q2 q5
+CCX q1 q2 q5
+CCX q3 q5 q0
+CCX q1 q2 q5
+CCX q0 q1 q5
+CCX q3 q5 q6
+CCX q4 q6 q2
+CCX q3 q5 q6
+CCX q0 q1 q5
+CCX q0 q2 q5
+CCX q3 q5 q1
+CCX q0 q2 q5
+CCX q0 q1 q5
+CCX q3 q5 q2
+CCX q0 q1 q5
+CCX q0 q2 q5
+CCX q3 q5 q1
+CCX q0 q2 q5
+CCX q2 q3 q0
+CCX q1 q3 q0
+CX q3 q4
+CX q3 q2
+CCX q2 q4 q3
+CCX q0 q1 q5
+CCX q2 q5 q4
+CCX q0 q1 q5
+CCX q0 q2 q5
+CCX q4 q5 q1
+CCX q0 q2 q5
+CCX q2 q4 q0
+CCX q0 q2 q3
+CX q2 q4
+CX q1 q3
+CX q0 q2
+
+----- VERIFIER VERDICT (proxy_env.verify) -----
+{
+  "valid": true,
+  "reason": "ok",
+  "toffoli": 70.0,
+  "peak_width": 7,
+  "cost": 490.0,
+  "vs_ref_pct": 1.0,
+  "frac_correct": 1.0,
+  "frac_ancilla_clean": 1.0
+}

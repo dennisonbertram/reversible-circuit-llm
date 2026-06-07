@@ -1,0 +1,169 @@
+{
+  "summary": {
+    "model": "qwen2.5-coder:1.5b",
+    "n": 16,
+    "named_real_knob_rate": 0.438,
+    "direction_match_rate": 0.0,
+    "mentions_revalidate_rate": 0.125
+  },
+  "rows": [
+    {
+      "named_real_knob": false,
+      "direction_match": false,
+      "mentions_revalidate": false,
+      "named_knobs": [],
+      "knob": "DIALOG_TAIL_NONCE",
+      "old": "58134",
+      "gold_new": "78338"
+    },
+    {
+      "named_real_knob": true,
+      "direction_match": false,
+      "mentions_revalidate": false,
+      "named_knobs": [
+        "DIALOG_GCD_ACTIVE_ITERATIONS"
+      ],
+      "knob": "DIALOG_GCD_ACTIVE_ITERATIONS",
+      "old": "260",
+      "gold_new": "259"
+    },
+    {
+      "named_real_knob": true,
+      "direction_match": false,
+      "mentions_revalidate": true,
+      "named_knobs": [
+        "DIALOG_TAIL_NONCE"
+      ],
+      "knob": "DIALOG_TAIL_NONCE",
+      "old": "5646",
+      "gold_new": "58134"
+    },
+    {
+      "named_real_knob": false,
+      "direction_match": false,
+      "mentions_revalidate": false,
+      "named_knobs": [],
+      "knob": "DIALOG_GCD_ACTIVE_ITERATIONS",
+      "old": "261",
+      "gold_new": "260"
+    },
+    {
+      "named_real_knob": false,
+      "direction_match": false,
+      "mentions_revalidate": false,
+      "named_knobs": [],
+      "knob": "DIALOG_TAIL_NONCE",
+      "old": "2432",
+      "gold_new": "5646"
+    },
+    {
+      "named_real_knob": false,
+      "direction_match": false,
+      "mentions_revalidate": false,
+      "named_knobs": [],
+      "knob": "DIALOG_GCD_ACTIVE_ITERATIONS",
+      "old": "262",
+      "gold_new": "261"
+    },
+    {
+      "named_real_knob": false,
+      "direction_match": false,
+      "mentions_revalidate": false,
+      "named_knobs": [],
+      "knob": "DIALOG_GCD_APPLY_FINAL_WINDOWED_FAST_BLOCKS",
+      "old": "2",
+      "gold_new": "0"
+    },
+    {
+      "named_real_knob": true,
+      "direction_match": false,
+      "mentions_revalidate": true,
+      "named_knobs": [
+        "DIALOG_TAIL_NONCE"
+      ],
+      "knob": "DIALOG_TAIL_NONCE",
+      "old": "721381",
+      "gold_new": "2432"
+    },
+    {
+      "named_real_knob": false,
+      "direction_match": false,
+      "mentions_revalidate": false,
+      "named_knobs": [],
+      "knob": "DIALOG_GCD_APPLY_FINAL_LOWQ",
+      "old": "1",
+      "gold_new": "0"
+    },
+    {
+      "named_real_knob": true,
+      "direction_match": false,
+      "mentions_revalidate": false,
+      "named_knobs": [
+        "DIALOG_GCD_ACTIVE_ITERATIONS"
+      ],
+      "knob": "DIALOG_GCD_ACTIVE_ITERATIONS",
+      "old": "258",
+      "gold_new": "262"
+    },
+    {
+      "named_real_knob": false,
+      "direction_match": false,
+      "mentions_revalidate": false,
+      "named_knobs": [],
+      "knob": "DIALOG_TAIL_NONCE",
+      "old": "3400174",
+      "gold_new": "460000820"
+    },
+    {
+      "named_real_knob": false,
+      "direction_match": false,
+      "mentions_revalidate": false,
+      "named_knobs": [],
+      "knob": "DIALOG_TAIL_NONCE",
+      "old": "4596",
+      "gold_new": "2000181"
+    },
+    {
+      "named_real_knob": true,
+      "direction_match": false,
+      "mentions_revalidate": false,
+      "named_knobs": [
+        "KAL_DOUBLE_CARRY_TRUNC_W"
+      ],
+      "knob": "KAL_DOUBLE_CARRY_TRUNC_W",
+      "old": "24",
+      "gold_new": "22"
+    },
+    {
+      "named_real_knob": false,
+      "direction_match": false,
+      "mentions_revalidate": false,
+      "named_knobs": [],
+      "knob": "DIALOG_TAIL_NONCE",
+      "old": "264497",
+      "gold_new": "4596"
+    },
+    {
+      "named_real_knob": true,
+      "direction_match": false,
+      "mentions_revalidate": false,
+      "named_knobs": [
+        "DIALOG_GCD_WIDTH_SLOPE_X1000"
+      ],
+      "knob": "DIALOG_GCD_WIDTH_SLOPE_X1000",
+      "old": "1014",
+      "gold_new": "1013"
+    },
+    {
+      "named_real_knob": true,
+      "direction_match": false,
+      "mentions_revalidate": false,
+      "named_knobs": [
+        "DIALOG_GCD_APPLY_CHUNKED_F_CUT4"
+      ],
+      "knob": "DIALOG_GCD_APPLY_CHUNKED_F_CUT4",
+      "old": "190",
+      "gold_new": "165"
+    }
+  ]
+}

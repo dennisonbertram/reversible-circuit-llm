@@ -1,0 +1,287 @@
+{
+  "result": {
+    "model": "ecdsa-coder-1.5b-v4",
+    "wall_s": 2064.1,
+    "overall": {
+      "n": 23,
+      "parse_rate": 1.0,
+      "valid_rate": 0.043,
+      "win_rate": 0.0,
+      "mean_vs_ref": null,
+      "mean_reward": 0.069
+    },
+    "breakdown": {
+      "heldout": {
+        "n": 2,
+        "parse_rate": 1.0,
+        "valid_rate": 0.0,
+        "win_rate": 0.0,
+        "mean_vs_ref": null,
+        "mean_reward": 0.011
+      },
+      "unseen": {
+        "n": 21,
+        "parse_rate": 1.0,
+        "valid_rate": 0.048,
+        "win_rate": 0.0,
+        "mean_vs_ref": null,
+        "mean_reward": 0.074
+      }
+    }
+  },
+  "rows": [
+    {
+      "tag": "unseen:B0",
+      "family": "const_add",
+      "band": "B0",
+      "valid": true,
+      "cost": 0.0,
+      "ref_cost": 0.0,
+      "reason": "ok",
+      "reward": 1.0,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B0",
+      "family": "sbox",
+      "band": "B0",
+      "valid": false,
+      "cost": 0.0,
+      "ref_cost": 0.0,
+      "reason": "classical_mismatch",
+      "reward": 0.075,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B0",
+      "family": "gf2_linear",
+      "band": "B0",
+      "valid": false,
+      "cost": 0.0,
+      "ref_cost": 0.0,
+      "reason": "classical_mismatch",
+      "reward": 0.075,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B1",
+      "family": "const_add",
+      "band": "B1",
+      "valid": false,
+      "cost": 10.0,
+      "ref_cost": 96.0,
+      "reason": "classical_mismatch",
+      "reward": 0.056249999999999994,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B1",
+      "family": "controlled_addsub",
+      "band": "B1",
+      "valid": false,
+      "cost": 42.0,
+      "ref_cost": 170.0,
+      "reason": "classical_mismatch",
+      "reward": 0.056249999999999994,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B1",
+      "family": "sbox",
+      "band": "B1",
+      "valid": false,
+      "cost": 20.0,
+      "ref_cost": 96.0,
+      "reason": "classical_mismatch",
+      "reward": 0.0375,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B2",
+      "family": "reg_add",
+      "band": "B2",
+      "valid": false,
+      "cost": 1300.0,
+      "ref_cost": 15314.0,
+      "reason": "classical_mismatch",
+      "reward": 0.005859375,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B2",
+      "family": "gf2_linear",
+      "band": "B2",
+      "valid": false,
+      "cost": 0.0,
+      "ref_cost": 96.0,
+      "reason": "classical_mismatch",
+      "reward": 0.075,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B2",
+      "family": "mod_mult",
+      "band": "B2",
+      "valid": false,
+      "cost": 24.0,
+      "ref_cost": 240.0,
+      "reason": "classical_mismatch",
+      "reward": 0.046875,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B3",
+      "family": "mod_mult",
+      "band": "B3",
+      "valid": false,
+      "cost": 329.0,
+      "ref_cost": 609.0,
+      "reason": "classical_mismatch",
+      "reward": 0.0234375,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B3",
+      "family": "sbox",
+      "band": "B3",
+      "valid": false,
+      "cost": 532.0,
+      "ref_cost": 966.0,
+      "reason": "classical_mismatch",
+      "reward": 0.014062499999999999,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B3",
+      "family": "const_add",
+      "band": "B3",
+      "valid": false,
+      "cost": 413.0,
+      "ref_cost": 1183.0,
+      "reason": "classical_mismatch",
+      "reward": 0.014062499999999999,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B4",
+      "family": "controlled_addsub",
+      "band": "B4",
+      "valid": false,
+      "cost": 946.0,
+      "ref_cost": 5104.0,
+      "reason": "classical_mismatch",
+      "reward": 0.021093749999999998,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B4",
+      "family": "mod_mult",
+      "band": "B4",
+      "valid": false,
+      "cost": 756.0,
+      "ref_cost": 783.0,
+      "reason": "classical_mismatch",
+      "reward": 0.01171875,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B4",
+      "family": "gf2_linear",
+      "band": "B4",
+      "valid": false,
+      "cost": 360.0,
+      "ref_cost": 3942.0,
+      "reason": "classical_mismatch",
+      "reward": 0.009375,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B5",
+      "family": "mod_inverse",
+      "band": "B5",
+      "valid": false,
+      "cost": 675.0,
+      "ref_cost": 4383.0,
+      "reason": "classical_mismatch",
+      "reward": 0.007031249999999999,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B5",
+      "family": "mod_mult",
+      "band": "B5",
+      "valid": false,
+      "cost": 468.0,
+      "ref_cost": 4158.0,
+      "reason": "classical_mismatch",
+      "reward": 0.007031249999999999,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B6",
+      "family": "mod_inverse",
+      "band": "B6",
+      "valid": false,
+      "cost": 1111.0,
+      "ref_cost": 17875.0,
+      "reason": "classical_mismatch",
+      "reward": 0.0035156249999999997,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B6",
+      "family": "mod_mult",
+      "band": "B6",
+      "valid": false,
+      "cost": 1221.0,
+      "ref_cost": 18546.0,
+      "reason": "classical_mismatch",
+      "reward": 0.010546874999999999,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B6",
+      "family": "sbox",
+      "band": "B6",
+      "valid": false,
+      "cost": 1248.0,
+      "ref_cost": 18546.0,
+      "reason": "classical_mismatch",
+      "reward": 0.00234375,
+      "parsed": true
+    },
+    {
+      "tag": "unseen:B5",
+      "family": "mod_mult",
+      "band": "B5",
+      "valid": false,
+      "cost": 657.0,
+      "ref_cost": 4284.0,
+      "reason": "classical_mismatch",
+      "reward": 0.007031249999999999,
+      "parsed": true
+    },
+    {
+      "tag": "heldout",
+      "family": "heldout_fma",
+      "band": "HELDOUT",
+      "valid": false,
+      "cost": 759.0,
+      "ref_cost": 2040.0,
+      "reason": "classical_mismatch",
+      "reward": 0.01640625,
+      "parsed": true
+    },
+    {
+      "tag": "heldout",
+      "family": "heldout_sbox6",
+      "band": "HELDOUT",
+      "valid": false,
+      "cost": 810.0,
+      "ref_cost": 4869.0,
+      "reason": "classical_mismatch",
+      "reward": 0.0046875,
+      "parsed": true
+    }
+  ]
+}

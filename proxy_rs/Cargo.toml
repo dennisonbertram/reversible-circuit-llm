@@ -1,0 +1,21 @@
+[package]
+name = "proxy_verify"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "proxy_verify"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+debug = false
+
+[dependencies]
+# Vendored circuit.rs/sim.rs (byte-identical copies of the challenge sources) depend on:
+#   ruint -> U256 used by sim.rs set_register/get_register
+#   sha3  -> XofReader trait bound on Simulator (R/HMR rng)
+ruint = "1.12"
+sha3 = "0.10"
