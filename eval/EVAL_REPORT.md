@@ -143,6 +143,24 @@ the seed of this), **frontier-scale reasoning models**, or **neuro-symbolic** (L
 a solver executes). Those are the honest next directions; more data / bigger models / these RL+CoT
 recipes are demonstrated dead-ends at this scale.
 
+## GO-HARD v4 — tool-use (state externalization) (2026-06-07)
+Built `proxy/tooluse.py` (ToolEnv): the tool tracks the cumulative circuit state and the model picks
+ONE gate per turn, seeing current-vs-target mismatches each step — so the model never has to execute
+the multi-step procedure in its head. **Zero-shot result (existing v4 model):**
+
+| family / band | width | no-tool best-of-8 | TOOL (zero-shot) |
+|---|---|---|---|
+| gf2_linear B0 | 2-bit | 100% | 100% |
+| gf2_linear B1 | 3-bit | 60% | **0%** |
+| gf2_linear B2 | 4-bit | 40% | **0%** |
+
+**State externalization is necessary but NOT sufficient.** At the 2-bit worked-example scale the tool
+solves 100%, but at 3+ bits the model *thrashes* — it picks an occasional correct reducing move then
+undoes it, never converging — and actually does WORSE than no-tool. So the real bottleneck is
+**sequential planning over single steps**, not state-tracking. Next lever (in progress): **SFT the
+model on expert single-step play traces** (`proxy/tooltrace_gen.py`) so it learns the per-step policy —
+imitation-learning the policy decomposes the multi-step problem into steps the model can imitate.
+
 ## Honest assessment
 - **Proven (the goal):** base→trained is a clear, quantified jump on the real-challenge move task
   (T-CFG: 0.44/0.0/0.13 → 1.0/0.625/1.0) and on op-stream DSL acquisition (Python/garbage → clean

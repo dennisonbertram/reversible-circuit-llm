@@ -1,0 +1,588 @@
+{
+  "model": "ecdsa-coder-1.5b-v4",
+  "wall_s": 605.3,
+  "results": {
+    "gf2_linear:B0": {
+      "n": 3,
+      "baseline_valid_rate": 1.0,
+      "tool_valid_rate": 1.0,
+      "tool_mean_steps": 3.0,
+      "tool_mean_cost": 0.0,
+      "baseline_mean_cost": 0.0,
+      "mean_ref_cost": 0.0,
+      "per_inst": [
+        {
+          "params": {
+            "n": 2,
+            "M": [
+              3,
+              1
+            ]
+          },
+          "ref_cost": 0.0,
+          "baseline_valid": true,
+          "baseline_reason": "ok",
+          "tool_solved": true,
+          "tool_steps": 2,
+          "tool_cost": 0.0,
+          "tool_reason_n_mismatch": 0
+        },
+        {
+          "params": {
+            "n": 2,
+            "M": [
+              2,
+              1
+            ]
+          },
+          "ref_cost": 0.0,
+          "baseline_valid": true,
+          "baseline_reason": "ok",
+          "tool_solved": true,
+          "tool_steps": 3,
+          "tool_cost": 0.0,
+          "tool_reason_n_mismatch": 0
+        },
+        {
+          "params": {
+            "n": 2,
+            "M": [
+              2,
+              3
+            ]
+          },
+          "ref_cost": 0.0,
+          "baseline_valid": true,
+          "baseline_reason": "ok",
+          "tool_solved": true,
+          "tool_steps": 4,
+          "tool_cost": 0.0,
+          "tool_reason_n_mismatch": 0
+        }
+      ]
+    },
+    "gf2_linear:B1": {
+      "n": 5,
+      "baseline_valid_rate": 0.6,
+      "tool_valid_rate": 0.0,
+      "tool_mean_steps": null,
+      "tool_mean_cost": null,
+      "baseline_mean_cost": 0.0,
+      "mean_ref_cost": 67.2,
+      "per_inst": [
+        {
+          "params": {
+            "n": 3,
+            "M": [
+              6,
+              7,
+              5
+            ]
+          },
+          "ref_cost": 144.0,
+          "baseline_valid": false,
+          "baseline_reason": "classical_mismatch",
+          "tool_solved": false,
+          "tool_steps": 13,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 4
+        },
+        {
+          "params": {
+            "n": 3,
+            "M": [
+              2,
+              4,
+              5
+            ]
+          },
+          "ref_cost": 96.0,
+          "baseline_valid": false,
+          "baseline_reason": "classical_mismatch",
+          "tool_solved": false,
+          "tool_steps": 7,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 6
+        },
+        {
+          "params": {
+            "n": 3,
+            "M": [
+              7,
+              3,
+              1
+            ]
+          },
+          "ref_cost": 96.0,
+          "baseline_valid": true,
+          "baseline_reason": "ok",
+          "tool_solved": false,
+          "tool_steps": 12,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 6
+        },
+        {
+          "params": {
+            "n": 3,
+            "M": [
+              7,
+              5,
+              6
+            ]
+          },
+          "ref_cost": 0.0,
+          "baseline_valid": true,
+          "baseline_reason": "ok",
+          "tool_solved": false,
+          "tool_steps": 4,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 4
+        },
+        {
+          "params": {
+            "n": 3,
+            "M": [
+              6,
+              5,
+              2
+            ]
+          },
+          "ref_cost": 0.0,
+          "baseline_valid": true,
+          "baseline_reason": "ok",
+          "tool_solved": false,
+          "tool_steps": 5,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 6
+        }
+      ]
+    },
+    "gf2_linear:B2": {
+      "n": 5,
+      "baseline_valid_rate": 0.4,
+      "tool_valid_rate": 0.0,
+      "tool_mean_steps": null,
+      "tool_mean_cost": null,
+      "baseline_mean_cost": 0.0,
+      "mean_ref_cost": 36.0,
+      "per_inst": [
+        {
+          "params": {
+            "n": 4,
+            "M": [
+              7,
+              6,
+              4,
+              8
+            ]
+          },
+          "ref_cost": 0.0,
+          "baseline_valid": false,
+          "baseline_reason": "classical_mismatch",
+          "tool_solved": false,
+          "tool_steps": 8,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 12
+        },
+        {
+          "params": {
+            "n": 4,
+            "M": [
+              5,
+              9,
+              10,
+              14
+            ]
+          },
+          "ref_cost": 180.0,
+          "baseline_valid": false,
+          "baseline_reason": "classical_mismatch",
+          "tool_solved": false,
+          "tool_steps": 5,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 15
+        },
+        {
+          "params": {
+            "n": 4,
+            "M": [
+              5,
+              4,
+              14,
+              9
+            ]
+          },
+          "ref_cost": 0.0,
+          "baseline_valid": false,
+          "baseline_reason": "classical_mismatch",
+          "tool_solved": false,
+          "tool_steps": 2,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 14
+        },
+        {
+          "params": {
+            "n": 4,
+            "M": [
+              13,
+              10,
+              1,
+              9
+            ]
+          },
+          "ref_cost": 0.0,
+          "baseline_valid": true,
+          "baseline_reason": "ok",
+          "tool_solved": false,
+          "tool_steps": 3,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 14
+        },
+        {
+          "params": {
+            "n": 4,
+            "M": [
+              7,
+              6,
+              10,
+              4
+            ]
+          },
+          "ref_cost": 0.0,
+          "baseline_valid": true,
+          "baseline_reason": "ok",
+          "tool_solved": false,
+          "tool_steps": 1,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 14
+        }
+      ]
+    },
+    "gf2_linear:B3": {
+      "n": 5,
+      "baseline_valid_rate": 0.0,
+      "tool_valid_rate": 0.0,
+      "tool_mean_steps": null,
+      "tool_mean_cost": null,
+      "baseline_mean_cost": null,
+      "mean_ref_cost": 148.8,
+      "per_inst": [
+        {
+          "params": {
+            "n": 5,
+            "M": [
+              3,
+              23,
+              2,
+              10,
+              18
+            ]
+          },
+          "ref_cost": 574.0,
+          "baseline_valid": false,
+          "baseline_reason": "classical_mismatch",
+          "tool_solved": false,
+          "tool_steps": 1,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 28
+        },
+        {
+          "params": {
+            "n": 5,
+            "M": [
+              10,
+              18,
+              20,
+              28,
+              27
+            ]
+          },
+          "ref_cost": 0.0,
+          "baseline_valid": false,
+          "baseline_reason": "classical_mismatch",
+          "tool_solved": false,
+          "tool_steps": 2,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 28
+        },
+        {
+          "params": {
+            "n": 5,
+            "M": [
+              9,
+              7,
+              8,
+              12,
+              31
+            ]
+          },
+          "ref_cost": 40.0,
+          "baseline_valid": false,
+          "baseline_reason": "classical_mismatch",
+          "tool_solved": false,
+          "tool_steps": 1,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 30
+        },
+        {
+          "params": {
+            "n": 5,
+            "M": [
+              17,
+              13,
+              19,
+              18,
+              4
+            ]
+          },
+          "ref_cost": 60.0,
+          "baseline_valid": false,
+          "baseline_reason": "classical_mismatch",
+          "tool_solved": false,
+          "tool_steps": 7,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 30
+        },
+        {
+          "params": {
+            "n": 5,
+            "M": [
+              14,
+              12,
+              20,
+              8,
+              9
+            ]
+          },
+          "ref_cost": 70.0,
+          "baseline_valid": false,
+          "baseline_reason": "classical_mismatch",
+          "tool_solved": false,
+          "tool_steps": 5,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 28
+        }
+      ]
+    },
+    "const_add:B1": {
+      "n": 5,
+      "baseline_valid_rate": 0.0,
+      "tool_valid_rate": 0.0,
+      "tool_mean_steps": null,
+      "tool_mean_cost": null,
+      "baseline_mean_cost": null,
+      "mean_ref_cost": 67.2,
+      "per_inst": [
+        {
+          "params": {
+            "n": 3,
+            "m": 7,
+            "a": 5
+          },
+          "ref_cost": 96.0,
+          "baseline_valid": false,
+          "baseline_reason": "classical_mismatch",
+          "tool_solved": false,
+          "tool_steps": 9,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 8
+        },
+        {
+          "params": {
+            "n": 3,
+            "m": 5,
+            "a": 3
+          },
+          "ref_cost": 96.0,
+          "baseline_valid": false,
+          "baseline_reason": "classical_mismatch",
+          "tool_solved": false,
+          "tool_steps": 15,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 8
+        },
+        {
+          "params": {
+            "n": 3,
+            "m": 7,
+            "a": 1
+          },
+          "ref_cost": 48.0,
+          "baseline_valid": false,
+          "baseline_reason": "classical_mismatch",
+          "tool_solved": false,
+          "tool_steps": 2,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 8
+        },
+        {
+          "params": {
+            "n": 3,
+            "m": 5,
+            "a": 1
+          },
+          "ref_cost": 48.0,
+          "baseline_valid": false,
+          "baseline_reason": "classical_mismatch",
+          "tool_solved": false,
+          "tool_steps": 5,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 8
+        },
+        {
+          "params": {
+            "n": 3,
+            "m": 7,
+            "a": 2
+          },
+          "ref_cost": 48.0,
+          "baseline_valid": false,
+          "baseline_reason": "classical_mismatch",
+          "tool_solved": false,
+          "tool_steps": 2,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 8
+        }
+      ]
+    },
+    "controlled_addsub:B1": {
+      "n": 5,
+      "baseline_valid_rate": 0.0,
+      "tool_valid_rate": 0.0,
+      "tool_mean_steps": null,
+      "tool_mean_cost": null,
+      "baseline_mean_cost": null,
+      "mean_ref_cost": 118.0,
+      "per_inst": [
+        {
+          "params": {
+            "n": 3,
+            "m": 7,
+            "a": 5,
+            "sub": true
+          },
+          "ref_cost": 70.0,
+          "baseline_valid": false,
+          "baseline_reason": "classical_mismatch",
+          "tool_solved": false,
+          "tool_steps": 7,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 15
+        },
+        {
+          "params": {
+            "n": 3,
+            "m": 5,
+            "a": 3,
+            "sub": true
+          },
+          "ref_cost": 80.0,
+          "baseline_valid": false,
+          "baseline_reason": "classical_mismatch",
+          "tool_solved": false,
+          "tool_steps": 2,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 5
+        },
+        {
+          "params": {
+            "n": 3,
+            "m": 7,
+            "a": 1,
+            "sub": true
+          },
+          "ref_cost": 170.0,
+          "baseline_valid": false,
+          "baseline_reason": "classical_mismatch",
+          "tool_solved": false,
+          "tool_steps": 6,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 14
+        },
+        {
+          "params": {
+            "n": 3,
+            "m": 5,
+            "a": 1,
+            "sub": true
+          },
+          "ref_cost": 100.0,
+          "baseline_valid": false,
+          "baseline_reason": "classical_mismatch",
+          "tool_solved": false,
+          "tool_steps": 11,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 14
+        },
+        {
+          "params": {
+            "n": 3,
+            "m": 5,
+            "a": 3,
+            "sub": false
+          },
+          "ref_cost": 170.0,
+          "baseline_valid": false,
+          "baseline_reason": "classical_mismatch",
+          "tool_solved": false,
+          "tool_steps": 8,
+          "tool_cost": null,
+          "tool_reason_n_mismatch": 12
+        }
+      ]
+    }
+  },
+  "transcript": {
+    "family": "gf2_linear",
+    "band": "B0",
+    "ref_cost": 0.0,
+    "params": {
+      "n": 2,
+      "M": [
+        3,
+        1
+      ]
+    },
+    "result": {
+      "solved": true,
+      "opstream": "CX q1 q0\nCX q0 q1",
+      "steps": 2,
+      "cost": 0.0,
+      "peak_width": 2,
+      "toffoli": 0.0,
+      "n_mismatch": 0,
+      "transcript": [
+        {
+          "turn": 1,
+          "kind": "model",
+          "raw": "CX q1 q0\nCX q0 q1\nCX q0 q2\nCX q2 q0",
+          "op": "CX q1 q0"
+        },
+        {
+          "turn": 1,
+          "kind": "tool",
+          "applied": "CX q1 q0",
+          "n_mismatch": 2,
+          "cost": 0.0,
+          "peak_width": 2,
+          "done": false
+        },
+        {
+          "turn": 2,
+          "kind": "model",
+          "raw": "CX q0 q1\nCX q1 q0",
+          "op": "CX q0 q1"
+        },
+        {
+          "turn": 2,
+          "kind": "tool",
+          "applied": "CX q0 q1",
+          "n_mismatch": 0,
+          "cost": 0.0,
+          "peak_width": 2,
+          "done": true
+        }
+      ]
+    }
+  }
+}
