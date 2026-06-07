@@ -32,6 +32,9 @@ def _extract(text):
     KINDS = {"X", "Z", "CX", "CZ", "CCX", "CCZ", "SWAP", "R", "HMR", "NEG", "BIT_INVERT",
              "BIT_STORE0", "BIT_STORE1", "REGISTER", "APPEND_TO_REGISTER", "PUSH_CONDITION",
              "POP_CONDITION", "DEBUG_PRINT"}
+    # reasoning models emit "<CoT>\n\nOP-STREAM:\n<ops>" — take only the post-marker op-stream
+    if "OP-STREAM:" in text:
+        text = text.rsplit("OP-STREAM:", 1)[1]
     m = re.findall(r"```[a-zA-Z0-9_]*\n(.*?)```", text, re.S)
     body = (m[0] if m else text).replace(";", "\n")
     return "\n".join(ln.strip() for ln in body.splitlines()
@@ -41,7 +44,8 @@ def _extract(text):
 
 @app.function(image=img, gpu="L40S", timeout=3600, volumes={"/artifacts": artifacts,
               "/root/.cache/huggingface": hf_cache})
-def eval_model(model_dir: str, per_band: int = 3, n_samples: int = 16, temperature: float = 0.8):
+def eval_model(model_dir: str, per_band: int = 3, n_samples: int = 16, temperature: float = 0.8,
+               max_new_tokens: int = 400):
     if not BUILD_HEAVY:
         raise RuntimeError("Relaunch with ECDSA_BUILD_HEAVY=1.")
     import sys
@@ -86,8 +90,9 @@ def eval_model(model_dir: str, per_band: int = 3, n_samples: int = 16, temperatu
                                       return_dict=True).to(model.device)
         plen = enc["input_ids"].shape[1]
         with torch.no_grad():
-            out = model.generate(**enc, max_new_tokens=400, do_sample=True, temperature=temperature,
-                                 top_p=0.95, num_return_sequences=n_samples, pad_token_id=tok.pad_token_id)
+            out = model.generate(**enc, max_new_tokens=max_new_tokens, do_sample=True,
+                                 temperature=temperature, top_p=0.95,
+                                 num_return_sequences=n_samples, pad_token_id=tok.pad_token_id)
         best_valid = False
         for o in out:
             txt = tok.decode(o[plen:], skip_special_tokens=True)
@@ -115,6 +120,6 @@ def eval_model(model_dir: str, per_band: int = 3, n_samples: int = 16, temperatu
 
 @app.local_entrypoint()
 def main(model_dir: str = "/artifacts/qwen7b-sft-v4-merged", per_band: int = 3,
-         n_samples: int = 16, temperature: float = 0.8):
-    print(eval_model.remote(model_dir=model_dir, per_band=per_band,
-                            n_samples=n_samples, temperature=temperature))
+         n_samples: int = 16, temperature: float = 0.8, max_new_tokens: int = 400):
+    print(eval_model.remote(model_dir=model_dir, per_band=per_band, n_samples=n_samples,
+                            temperature=temperature, max_new_tokens=max_new_tokens))

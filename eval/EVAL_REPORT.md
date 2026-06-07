@@ -116,6 +116,33 @@ checked) — algorithmic tasks need search/reasoning, not pattern-matching; (2) 
 call `synth.py`/verifier mid-solve). NOTE: v4 is a *synthesis specialist* (trained only on op-streams);
 a production model should mix in the v1 moves/reasoning data to retain the T-CFG move skill.
 
+## GO-HARD v3 — the three levers, and the real bottleneck (2026-06-07)
+After v4 crossed to 4.8% on B0, I ran the three evidence-based levers to crack n≥3. **All three land
+at the same ~4% ceiling** (solve the easiest band, fail n≥3):
+
+| approach | held-out valid_rate@16 | which band |
+|---|---|---|
+| v4 SFT (24.5k optimal targets) | 4.8% | B0 |
+| 7B SFT (same data) | 4.8% | B0 |
+| + RL (`grpo_v2`, collapse-proof) | 3.6% | shifted to B1 |
+| + reasoning-CoT (4,310 verified traces) | 3.6% | B1 |
+
+- **RL** ran clean but couldn't crack hard bands: GRPO needs reward *variance* in a rollout group, and
+  where all 16 samples are invalid there is no gradient (sparse-reward wall).
+- **Reasoning-CoT** trained on 4,170 gf2 traces that *derive* the circuit (XOR eqs → Gaussian
+  elimination → CX), and still didn't crack B2 gf2 — the 1.5B can narrate the algorithm but makes
+  errors *executing* the multi-step elimination for unseen matrices.
+
+**THE REAL BOTTLENECK (the non-obvious finding):** this is not data quality, not capacity (7B==1.5B),
+not RL, not reasoning. It is the model's inability to reliably **execute multi-step symbolic
+procedures** (Gaussian elimination, ripple-carry, modular reduction) for unseen n≥3 — a fundamental
+limit of small LLMs on algorithmic tasks. The optimal-data + bug-fix work is what got it to *solve the
+easiest band at all* (0 → 4.8%), but the remaining gap needs a different class of solution:
+**tool-use** (let the model *call* the verifier/`synth.py` and offload execution — the agentic loop is
+the seed of this), **frontier-scale reasoning models**, or **neuro-symbolic** (LLM proposes structure,
+a solver executes). Those are the honest next directions; more data / bigger models / these RL+CoT
+recipes are demonstrated dead-ends at this scale.
+
 ## Honest assessment
 - **Proven (the goal):** base→trained is a clear, quantified jump on the real-challenge move task
   (T-CFG: 0.44/0.0/0.13 → 1.0/0.625/1.0) and on op-stream DSL acquisition (Python/garbage → clean

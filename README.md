@@ -20,10 +20,13 @@ oracle):
 | v1 SFT (bloated MMD targets) | **0%** | −0.59 |
 | **v4 SFT (24.5k optimal targets + bug fix)** | **4.8%** (solves the easiest band) | **+0.07** |
 
-**Key finding:** a 7B trained identically scores the *same* 4.8% → this is **not a capacity problem**.
-Reversible synthesis of unseen tasks is *algorithmic*; pure imitation plateaus at the easiest band at
-every scale. The levers that target the harder bands — **reasoning/long-CoT** and **RL** — are
-implemented here (`proxy/reason_gen.py`, `train/dpo_app.py::grpo_v2`).
+**Key finding:** a 7B, RL (`grpo_v2`), and reasoning-CoT (4,310 verified traces) all land at the **same
+~4% ceiling** (solve the easiest band, fail n≥3). So this is **not** a capacity, data, RL, or reasoning
+problem — the real bottleneck is the small model's inability to reliably **execute multi-step symbolic
+procedures** (Gaussian elimination, ripple-carry) for unseen instances. It can *narrate* the algorithm
+but makes *execution* errors. The honest next directions are **tool-use** (let the model call the
+verifier/`synth.py` and offload execution), **frontier-scale reasoning models**, or **neuro-symbolic**
+methods — not more data or bigger models. Full analysis in `eval/EVAL_REPORT.md`.
 
 What drove the jump from the PoC:
 1. **A verifier-as-search data factory** (`proxy/synth.py`): training targets at **0.54× the Toffoli
