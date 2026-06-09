@@ -28,3 +28,6 @@ infra/
 .modal.toml
 *.pem
 *.key
+
+# Flywheel cumulative training sets (large, regenerate via flywheel/combine.py)
+data/fly*.jsonl

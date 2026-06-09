@@ -1,0 +1,66 @@
+[
+  {
+    "iter": 0,
+    "model": "/artifacts/fly8-iter1-merged",
+    "eval": {
+      "overall_solve_rate": 0.519
+    },
+    "note": "seed"
+  },
+  {
+    "iter": 1,
+    "model": "/artifacts/fly8b-iter1-merged",
+    "eval": {
+      "model_dir": "/artifacts/fly8b-iter1-merged",
+      "max_steps": 40,
+      "by_band": {
+        "B1": {
+          "n": 8,
+          "solved": 8,
+          "solve_rate": 1.0
+        },
+        "B2": {
+          "n": 8,
+          "solved": 8,
+          "solve_rate": 1.0
+        },
+        "B3": {
+          "n": 8,
+          "solved": 2,
+          "solve_rate": 0.25
+        },
+        "B4": {
+          "n": 8,
+          "solved": 0,
+          "solve_rate": 0.0
+        }
+      },
+      "overall_solve_rate": 0.562
+    },
+    "harvest": {
+      "total_harvested": 164,
+      "total_solved": 164,
+      "total_attempted": 360,
+      "by_band": {
+        "B2": {
+          "attempted": 120,
+          "solved": 101,
+          "solve_rate": 0.842
+        },
+        "B3": {
+          "attempted": 120,
+          "solved": 53,
+          "solve_rate": 0.442
+        },
+        "B4": {
+          "attempted": 120,
+          "solved": 10,
+          "solve_rate": 0.083
+        }
+      }
+    },
+    "combined_total": 3948,
+    "gain": 0.043,
+    "elapsed_s": 24195.4
+  }
+]

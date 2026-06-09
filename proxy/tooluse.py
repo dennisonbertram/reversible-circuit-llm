@@ -250,22 +250,36 @@ class ToolEnv:
         v = c["verify"]
         lines: List[str] = []
 
-        # Target description (function), declared registers.
+        # COMPACT gf2 view: the residual rows fully specify what's left, so we SKIP the 2^n truth
+        # table + per-input mismatch list (which bloat n>=5 traces ~10x). The model row-reduces
+        # directly off the marked rows.
+        gf2 = self._gf2_residual_rows()
+        if gf2:
+            lines.append(f"TARGET: in-place GF(2)-linear map on {self.n_in} bits "
+                         f"(qubits {self.in_qubits}). Drive each output row to its target.")
+            lines.extend(gf2)
+            lines.append("")
+            lines.append(f"EMITTED so far ({len(self.emitted)} ops): "
+                         + ("; ".join(self.emitted) if self.emitted else "(none)"))
+            n_wrong = sum(1 for ln in gf2 if "WRONG" in ln)
+            lines.append(f"STATUS: Toffoli_cost={c['toffoli']:.3g}  peak_width={c['peak_width']}"
+                         f"  (cap {self.max_width})  cost={c['cost']:.3g}"
+                         f"  ancilla_dirty={'YES' if c['n_anc_dirty'] else 'no'}"
+                         f"  rows_wrong={n_wrong}")
+            if self.done:
+                lines.append("MISMATCHES: none. CIRCUIT IS COMPLETE.")
+            else:
+                lines.append(f"{c['n_mismatch']} input(s) still wrong — fix the rows marked WRONG above.")
+            return "\n".join(lines)
+
+        # Non-gf2: full truth table + per-input mismatch list.
         lines.append(f"TARGET f over inputs x in [0,{(1 << self.n_in) - 1}] "
                      f"(input qubits {self.in_qubits}, output qubits {self.out_qubits}):")
-        # full truth table is small for n_in<=6 (<=64 rows); show it compactly.
         tt = []
         for x in range(1 << self.n_in):
             tt.append(f"{x}->{self.f(x) & ((1 << self.out_bits_len) - 1)}")
-        # wrap the truth table at ~12 entries per line
         for k in range(0, len(tt), 12):
             lines.append("    " + "  ".join(tt[k:k + 12]))
-
-        # GF(2) residual (only for gf2_linear-style tasks).
-        gf2 = self._gf2_residual_rows()
-        if gf2:
-            lines.append("")
-            lines.extend(gf2)
 
         # Current circuit + status.
         lines.append("")

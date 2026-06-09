@@ -1,0 +1,178 @@
+[
+  {
+    "iter": 0,
+    "model": "/artifacts/qwen-tool-v2-merged",
+    "eval": {
+      "overall_solve_rate": 0.25
+    },
+    "note": "seed"
+  },
+  {
+    "iter": 1,
+    "model": "/artifacts/fly15-iter1-merged",
+    "eval": {
+      "model_dir": "/artifacts/fly15-iter1-merged",
+      "max_steps": 40,
+      "by_band": {
+        "B1": {
+          "n": 6,
+          "solved": 4,
+          "solve_rate": 0.667
+        },
+        "B2": {
+          "n": 6,
+          "solved": 5,
+          "solve_rate": 0.833
+        },
+        "B3": {
+          "n": 6,
+          "solved": 0,
+          "solve_rate": 0.0
+        },
+        "B4": {
+          "n": 6,
+          "solved": 0,
+          "solve_rate": 0.0
+        }
+      },
+      "overall_solve_rate": 0.375
+    },
+    "harvest": {
+      "total_harvested": 57,
+      "total_solved": 57,
+      "total_attempted": 180,
+      "by_band": {
+        "B1": {
+          "attempted": 60,
+          "solved": 46,
+          "solve_rate": 0.767
+        },
+        "B2": {
+          "attempted": 60,
+          "solved": 11,
+          "solve_rate": 0.183
+        },
+        "B3": {
+          "attempted": 60,
+          "solved": 0,
+          "solve_rate": 0.0
+        }
+      }
+    },
+    "combined_total": 3369,
+    "gain": 0.125,
+    "elapsed_s": 9221.0
+  },
+  {
+    "iter": 2,
+    "model": "/artifacts/fly15-iter2-merged",
+    "eval": {
+      "model_dir": "/artifacts/fly15-iter2-merged",
+      "max_steps": 40,
+      "by_band": {
+        "B1": {
+          "n": 6,
+          "solved": 2,
+          "solve_rate": 0.333
+        },
+        "B2": {
+          "n": 6,
+          "solved": 4,
+          "solve_rate": 0.667
+        },
+        "B3": {
+          "n": 6,
+          "solved": 1,
+          "solve_rate": 0.167
+        },
+        "B4": {
+          "n": 6,
+          "solved": 0,
+          "solve_rate": 0.0
+        }
+      },
+      "overall_solve_rate": 0.292
+    },
+    "harvest": {
+      "total_harvested": 63,
+      "total_solved": 63,
+      "total_attempted": 180,
+      "by_band": {
+        "B1": {
+          "attempted": 60,
+          "solved": 50,
+          "solve_rate": 0.833
+        },
+        "B2": {
+          "attempted": 60,
+          "solved": 13,
+          "solve_rate": 0.217
+        },
+        "B3": {
+          "attempted": 60,
+          "solved": 0,
+          "solve_rate": 0.0
+        }
+      }
+    },
+    "combined_total": 3388,
+    "gain": -0.083,
+    "elapsed_s": 8899.4
+  },
+  {
+    "iter": 3,
+    "model": "/artifacts/fly15-iter3-merged",
+    "eval": {
+      "model_dir": "/artifacts/fly15-iter3-merged",
+      "max_steps": 40,
+      "by_band": {
+        "B1": {
+          "n": 6,
+          "solved": 4,
+          "solve_rate": 0.667
+        },
+        "B2": {
+          "n": 6,
+          "solved": 5,
+          "solve_rate": 0.833
+        },
+        "B3": {
+          "n": 6,
+          "solved": 1,
+          "solve_rate": 0.167
+        },
+        "B4": {
+          "n": 6,
+          "solved": 0,
+          "solve_rate": 0.0
+        }
+      },
+      "overall_solve_rate": 0.417
+    },
+    "harvest": {
+      "total_harvested": 55,
+      "total_solved": 55,
+      "total_attempted": 180,
+      "by_band": {
+        "B1": {
+          "attempted": 60,
+          "solved": 40,
+          "solve_rate": 0.667
+        },
+        "B2": {
+          "attempted": 60,
+          "solved": 14,
+          "solve_rate": 0.233
+        },
+        "B3": {
+          "attempted": 60,
+          "solved": 1,
+          "solve_rate": 0.017
+        }
+      }
+    },
+    "combined_total": 3403,
+    "gain": 0.125,
+    "elapsed_s": 8436.6
+  }
+]

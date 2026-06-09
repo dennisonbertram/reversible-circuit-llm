@@ -1,0 +1,66 @@
+[
+  {
+    "iter": 0,
+    "model": "/artifacts/qwen3-8b-toolbase-merged",
+    "eval": {
+      "overall_solve_rate": 0.625
+    },
+    "note": "seed"
+  },
+  {
+    "iter": 1,
+    "model": "/artifacts/fly8-iter1-merged",
+    "eval": {
+      "model_dir": "/artifacts/fly8-iter1-merged",
+      "max_steps": 40,
+      "by_band": {
+        "B1": {
+          "n": 8,
+          "solved": 8,
+          "solve_rate": 1.0
+        },
+        "B2": {
+          "n": 8,
+          "solved": 8,
+          "solve_rate": 1.0
+        },
+        "B3": {
+          "n": 8,
+          "solved": 2,
+          "solve_rate": 0.25
+        },
+        "B4": {
+          "n": 8,
+          "solved": 0,
+          "solve_rate": 0.0
+        }
+      },
+      "overall_solve_rate": 0.562
+    },
+    "harvest": {
+      "total_harvested": 149,
+      "total_solved": 149,
+      "total_attempted": 360,
+      "by_band": {
+        "B2": {
+          "attempted": 120,
+          "solved": 101,
+          "solve_rate": 0.842
+        },
+        "B3": {
+          "attempted": 120,
+          "solved": 43,
+          "solve_rate": 0.358
+        },
+        "B4": {
+          "attempted": 120,
+          "solved": 5,
+          "solve_rate": 0.042
+        }
+      }
+    },
+    "combined_total": 3150,
+    "gain": -0.063,
+    "elapsed_s": 25462.3
+  }
+]

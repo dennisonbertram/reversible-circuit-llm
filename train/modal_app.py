@@ -336,7 +336,7 @@ def _load_jsonl(path: str):
 @app.function(
     image=train_image,
     gpu="A10G",
-    timeout=3 * HOURS,
+    timeout=8 * HOURS,   # 7B on larger multi-turn data needs headroom (3h timed out before)
     volumes=VOLUMES,
     secrets=HF_SECRETS,
 )
@@ -775,8 +775,9 @@ def main(
         print(f"[main] smoke result: {result}")
     elif stage == "sft":
         rn = run_name or "qwen-sft-v1"
-        # 7B needs more VRAM than the A10G -> route it to an L40S at call time.
-        fn = sft.with_options(gpu="L40S") if "7b" in base_model.lower() else sft
+        # 7B/8B/larger need more VRAM than the A10G -> route to an L40S at call time.
+        _big = any(s in base_model.lower() for s in ("7b", "8b", "9b", "12b", "13b", "14b", "30b", "a3b"))
+        fn = sft.with_options(gpu="L40S") if _big else sft
         result = fn.remote(
             base_model=base_model, run_name=rn,
             dataset_path=dataset_path, epochs=epochs,
