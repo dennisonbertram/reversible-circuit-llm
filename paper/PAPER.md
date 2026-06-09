@@ -6,7 +6,6 @@
 >
 > - **The self-teaching idea did not work.** After two rounds of practicing on its own correct answers, the AI was no better on fresh problems than when it started (about 58% solved, both before and after). Training a model on answers it can already produce mostly teaches it what it already knows.
 > - **One thing worked well, and it wasn't size.** Without a "scratchpad" tool, a small model and a model five times larger were *equally bad* (both ~5%) — the hard part isn't knowledge, it's keeping track of the work in your head. Give the AI a scratchpad that shows what's still wrong after each step, and it starts solving real problems; only *then* does a bigger model pull ahead.
-> - **It is dangerously easy to fool yourself.** An early "breakthrough" on the hardest problems turned out to be a mirage caused by testing on too few examples. Testing properly made it disappear. The most useful takeaway of the whole project is a discipline: *measure with enough samples, or you will believe things that aren't true.*
 > - **Bottom line:** the model is genuinely useful on the easier cases, the self-improvement idea hit a real wall, and we're publishing the honest result — including the parts that didn't pan out. The model and the full write-up are free and open (links below).
 
 > **TL;DR (technical)**
@@ -14,11 +13,10 @@
 > - A state-externalizing tool that renders the residual after each gate removes this bottleneck, and only with the tool does scale appear to become decisive: a trained 1.5B (Qwen2.5-Coder-1.5B) caps at register width n=4, whereas a trained 8B (Qwen3-8B) reaches n=5. Because the two tool-trained models are of different families and generations, this single comparison confounds scale with family and is suggestive rather than a controlled ablation.
 > - Self-harvest expert iteration — supervised fine-tuning on the model's own verifier-confirmed solutions — produces no detectable held-out improvement: base, iter-1, and iter-2 differ by at most 1.2 points overall (58.1 / 56.9 / 58.1% at best-of-5), within per-band sampling error at n=40.
 > - Capability gains observed on the training distribution (harvest B3 yield rising from roughly 36% to 44% over two harvest rounds) do not transfer to held-out tasks (held-out B3 flat at 40 / 37.5 / 35%), isolating a harvest-versus-generalization gap.
-> - Evaluation budget is itself a result: an under-sampled best-of-2 protocol systematically inflates apparent progress in low-solve-rate bands, manufacturing a band "breakthrough" that an adequately-sampled best-of-5 protocol erases.
 
 ## Abstract
 
-This report studies whether a small open-weight language model can learn tool-driven synthesis of reversible (classical-reversible / quantum) circuits, and whether it can improve at the task through expert iteration on its own verifier-confirmed solutions. As a cheap and faithfully gradeable stand-in for the [ECDSA.fail](https://ecdsa.fail) secp256k1 point-addition challenge, the task is GF(2) linear-map synthesis: emit a sequence of reversible gates that transforms the identity into a target invertible n×n GF(2) matrix in place. Correctness is decided by a bit-packed classical-reversible simulator that agreed with a Rust reference on all 800 cases of the equivalence battery used, spanning the gate families and register widths exercised by the proxy. Three findings are reported. First, in the one-shot setting the task is insensitive to model scale: a 1.5B and a 7B model of the same family synthesize correctly at an identical 4.8%, locating the bottleneck in symbolic execution rather than capacity. Second, a state-externalizing tool removes this bottleneck, and only then does scale appear to matter: a trained 1.5B caps at n=4 while a trained 8B reaches n=5, on a single cross-family comparison that should be read as suggestive. Third, and centrally, self-harvest expert iteration yields no held-out improvement; across two iterations the overall best-of-5 solve rate is flat at approximately 58%, and the result is explained mechanistically. A subsidiary methodological finding establishes that the conclusion is sensitive to evaluation budget: under-sampling at low solve rates inflates apparent gains in the hardest band.
+This report studies whether a small open-weight language model can learn tool-driven synthesis of reversible (classical-reversible / quantum) circuits, and whether it can improve at the task through expert iteration on its own verifier-confirmed solutions. As a cheap and faithfully gradeable stand-in for the [ECDSA.fail](https://ecdsa.fail) secp256k1 point-addition challenge, the task is GF(2) linear-map synthesis: emit a sequence of reversible gates that transforms the identity into a target invertible n×n GF(2) matrix in place. Correctness is decided by a bit-packed classical-reversible simulator that agreed with a Rust reference on all 800 cases of the equivalence battery used, spanning the gate families and register widths exercised by the proxy. Three findings are reported. First, in the one-shot setting the task is insensitive to model scale: a 1.5B and a 7B model of the same family synthesize correctly at an identical 4.8%, locating the bottleneck in symbolic execution rather than capacity. Second, a state-externalizing tool removes this bottleneck, and only then does scale appear to matter: a trained 1.5B caps at n=4 while a trained 8B reaches n=5, on a single cross-family comparison that should be read as suggestive. Third, and centrally, self-harvest expert iteration yields no held-out improvement; across two iterations the overall best-of-5 solve rate is flat at approximately 58%, and the result is explained mechanistically. All comparisons use a fixed held-out set of 40 tasks per band under a best-of-5 protocol.
 
 ---
 
@@ -35,7 +33,6 @@ The contributions of this report are:
 1. A diagnosis that one-shot reversible-circuit synthesis is bottlenecked by symbolic execution rather than model capacity, evidenced by an identical 4.8% solve rate at 1.5B and 7B parameters within a single model family (§3).
 2. Evidence that a state-externalizing, verifier-backed tool removes this bottleneck and renders the task scale-sensitive, with a trained 1.5B capped at n=4 and a trained 8B reaching n=5; this rests on a single cross-family comparison and is reported as suggestive rather than as a controlled scale ablation (§3).
 3. A clean negative result: self-harvest expert iteration produces no held-out improvement over two iterations, with a mechanistic explanation (§5, §7).
-4. A methodological result: the conclusion is sensitive to evaluation budget, and under-sampling at low solve rates systematically inflates apparent gains in the hardest band (§6).
 
 ---
 
@@ -66,7 +63,7 @@ Optimal expert demonstrations are produced by Gaussian elimination (`proxy/synth
 
 ### 2.4 Evaluation protocol
 
-All held-out evaluations use a fixed set of **40 tasks per band**, with seeds held constant across the base model and every iteration so that every checkpoint is scored on the identical instances under an identical protocol. Each checkpoint is evaluated under **best-of-k** sampling: the model is given k independent attempts per task and the task counts as solved if the verifier accepts any attempt, in the manner of a verifier selecting the best of several candidate circuits. Two protocols are reported: best-of-2 at sampling temperature 0.4, and best-of-5 at temperature 0.7. The best-of-5 budget matches the five restarts per task used during harvesting (§4), and is the primary, adequately-sampled protocol. Because the two protocols differ in both the number of attempts k and the temperature, the contrast between them (§6) reflects both knobs and is not attributable to k in isolation. The best-of-2 protocol is reported for the methodological contrast it establishes.
+All held-out evaluations use a fixed set of **40 tasks per band**, with seeds held constant across the base model and every iteration so that every checkpoint is scored on the identical instances under an identical protocol. Each checkpoint is evaluated under **best-of-k** sampling: the model is given k independent attempts per task and the task counts as solved if the verifier accepts any attempt, in the manner of a verifier selecting the best of several candidate circuits. All comparisons use best-of-5 at temperature 0.7, which matches the five restarts per task used during harvesting (§4); at the low solve rates of the harder bands a 40-task sample requires this budget to resolve band-level differences. (A best-of-2 run at temperature 0.4 is also recorded in the released data for completeness.)
 
 ---
 
@@ -130,14 +127,7 @@ The intended mechanism is that the model's own verifier-confirmed successes beco
 
 ### 4.1 The 8B imitation base
 
-The base model is `Qwen/Qwen3-8B`, fine-tuned via LoRA on a B4-rich compact trace set of 1,200 optimal expert demonstrations per hard band. Straight from imitation it is strong on n≤4 and has a hole at n=6:
-
-| Eval | B1 | B2 | B3 | B4 | Overall |
-|------|----|----|----|----|---------|
-| 8-task/band (under-sampled) | 100% | 87.5% | 62.5% | 0% | 62.5% |
-| 40-task/band, best-of-2, temp 0.4 | 95% | 85% | 25% | 0% | 51.2% |
-
-The 8-task figures are reported only to anchor the methodological discussion in §6; the 40-task best-of-2 row is the reliable measurement. This checkpoint is the subject of the two subsequent self-harvest iterations, labeled **base → iter-1 → iter-2**, where iter-2 is seeded from iter-1. The chain is therefore two sequential self-harvest steps.
+The base model is `Qwen/Qwen3-8B`, fine-tuned via LoRA on a B4-rich compact trace set of 1,200 optimal expert demonstrations per hard band. Straight from imitation it is strong on n≤4 and weak at n=6; its best-of-5 held-out rates by band are reported in §5.1 (95 / 92.5 / 40 / 5%, overall 58.1%). This checkpoint is the subject of the two subsequent self-harvest iterations, labeled **base → iter-1 → iter-2**, where iter-2 is seeded from iter-1. The chain is therefore two sequential self-harvest steps.
 
 ---
 
@@ -169,36 +159,9 @@ A dedicated B4 ceiling probe corroborates that n=6 is near the model's intrinsic
 
 ---
 
-## 6. Sensitivity of conclusions to evaluation budget
+## 6. Reported protocol
 
-The verdict in §5 depends on adequate sampling. Under an under-sampled protocol the same checkpoints support a materially different and incorrect conclusion. This sensitivity is a methodological result in its own right.
-
-### 6.1 The best-of-2 reading
-
-At best-of-2 (temperature 0.4), the same three checkpoints, scored from `flywheel/clean_eval_results.jsonl`:
-
-| Stage | B1 | B2 | B3 | B4 | Overall |
-|-------|----|----|----|----|---------|
-| 8B base | 95% | 85% | 25% | 0% | 51.2% |
-| 8B iter-1 | 97.5% | 82.5% | 20% | 7.5% | 51.9% |
-| 8B iter-2 | 97.5% | 85% | 22.5% | 2.5% | 51.9% |
-
-Read in isolation, this table indicates that iteration cracked the n=6 band, with B4 rising from 0% to 7.5% while overall performance remained flat because B1 and B2 are saturated and B3 is within noise. The best-of-5 protocol shows this reading to be an artifact.
-
-### 6.2 The under-sampling artifact
-
-At best-of-5 the base already solves B4 at 5% (2 of 40). The base was never truly at 0% on n=6; with only two attempts it drew an unlucky 0 of 40. Self-harvest did not open the frontier band — the base was already there.
-
-| B4 solve rate | base | iter-1 | iter-2 |
-|---------------|------|--------|--------|
-| best-of-2 | 0% | 7.5% | 2.5% |
-| best-of-5 | 5% | 7.5% | 5% |
-
-![The B4 band under two protocols: best-of-2 displays an apparent 0→7.5% breakthrough, while best-of-5 shows the base already at 5% and the curve essentially flat.](figures/fig4_measurement_lesson.png)
-
-The mechanism is general. Under-sampling at low solve rates does not merely add variance; it systematically biases comparisons toward inventing progress. A checkpoint with a true solve rate near 5% frequently draws 0 of 40 at two attempts, so any later non-zero draw — itself well within sampling noise — reads as a newly acquired capability. The same under-sampling effect explains the 8-task base figure of 62.5% reported in §4.1: a lucky 5-of-8 draw on B3 implied a 62.5% band rate against a true best-of-2 rate near 25%, inflating the overall figure to 62.5% against a true 51.2%.
-
-The methodological conclusion is that at low solve rates one must report best-of-k, hold both k and temperature fixed across all comparisons, and never compare across protocols. A fixed, adequately-sampled, identical-protocol held-out set anchored to the base at the same k and temperature is what separates the genuine finding of §3 from the apparent gains visible under best-of-2.
+All evaluations in §5 use best-of-5 at 40 tasks per band, with the held-out seed set fixed across the base model and every iteration. At the low solve rates of the harder bands a 40-task sample carries a binomial standard error of several points, so band-level comparisons are only meaningful under a sufficiently large, fixed sampling budget; all comparisons in this report use best-of-5 and do not mix protocols. A best-of-2 run (temperature 0.4) is included in the released data (`flywheel/clean_eval_results.jsonl`) for completeness.
 
 ---
 

@@ -254,9 +254,11 @@ Two corrections fall out of this, and they matter:
    demos" story dissolves under a fair eval. **Lesson, paid for in compute: at low solve rates,
    best-of-2 manufactures phantom gains; always anchor with enough attempts.**
 
-2. **The harvest gains didn't generalize.** Harvest B3 rose 36→44→49% (training tasks, best-of-5),
-   but held-out best-of-5 B3 is flat (40 → 37.5 → 35, if anything down). The model got better at
-   the *training distribution*, not the task.
+2. **The harvest gains didn't generalize.** Harvest B3 rose 36→44% across the two harvest rounds
+   persisted to the history files (43/120 → 53/120; a third iter-2 harvest reached ~49% in the run
+   log before the loop was stopped, so it is not in a committed data file and is excluded from the
+   paper), but held-out best-of-5 B3 is flat (40 → 37.5 → 35, if anything down). The model got
+   better at the *training distribution*, not the task.
 
 **Why self-harvest plateaus (the mechanism):** STaR-style self-training only adds signal when the
 harvested solutions teach the model to solve things it *couldn't*. Here the harvest is dominated by
