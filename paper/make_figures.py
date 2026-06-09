@@ -22,6 +22,21 @@ def _clean(ax):
     ax.spines["top"].set_visible(False); ax.spines["right"].set_visible(False)
     ax.yaxis.grid(True, color=GRID, lw=1); ax.set_axisbelow(True)
 
+# ── Fig 0: HERO — the central result (flat best-of-5 curve vs target) ────────
+fig, ax = plt.subplots(figsize=(9.2, 3.9))
+stages = ["base", "iter-1", "iter-2"]
+overall = [58.1, 56.9, 58.1]
+ax.plot(stages, overall, "-o", color=BLUE, lw=3, ms=12, zorder=3)
+for x, v in zip(stages, overall):
+    ax.text(x, v+1.7, f"{v}%", ha="center", fontweight="bold", color=BLUE, fontsize=13)
+ax.axhline(65, color=RED, lw=1.8, ls="--", zorder=2)
+ax.text(2.04, 65, " target 65%", va="center", color=RED, fontsize=11, fontweight="bold")
+ax.set_ylim(45, 70); ax.set_xlim(-0.3, 2.45)
+ax.set_ylabel("held-out solve rate\n(best-of-5, n=40/band)")
+ax.set_title("Two rounds of self-harvest expert iteration leave held-out capability unchanged",
+             fontsize=13.5, fontweight="bold", pad=12)
+_clean(ax); fig.tight_layout(); fig.savefig(f"{OUT}/fig0_hero.png"); plt.close(fig)
+
 # ── Fig 1: THE WALL — capacity is not the bottleneck ─────────────────────────
 fig, ax = plt.subplots(figsize=(6.6, 4.2))
 bars = ax.bar(["Qwen2.5-Coder\n1.5B", "Qwen2.5-Coder\n7B"], [4.8, 4.8],

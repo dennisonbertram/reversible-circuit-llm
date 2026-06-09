@@ -18,14 +18,12 @@ for png in os.listdir(FIG):
         md = md.replace(f"figures/{png}", datauri(png))
         md = md.replace(f"paper/figures/{png}", datauri(png))
 
-lottie = json.load(open(os.path.join(FIG, "flywheel_hero.json")))
+hero_uri = datauri("fig0_hero.png")
 md_js = json.dumps(md)
-lottie_js = json.dumps(lottie)
 
 HTML = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Flywheel That Spun But Didn't Climb</title>
-<script src="https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie.min.js"></script>
+<title>Verifier-Backed Tool Use and the Limits of Self-Harvest Expert Iteration</title>
 <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
 <style>
 :root{--ink:#15202b;--mute:#5b6b7b;--blue:#2f6df0;--red:#e0563f;--line:#e6edf3;--bg:#fbfdff;}
@@ -34,7 +32,7 @@ body{margin:0;background:var(--bg);color:var(--ink);
  font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;}
 .wrap{max-width:820px;margin:0 auto;padding:0 22px 90px;}
 header{max-width:980px;margin:0 auto;padding:40px 22px 8px;text-align:center;}
-#hero{width:100%;max-width:760px;height:430px;margin:0 auto;}
+#hero{width:100%;max-width:820px;margin:18px auto 0;display:block;border:1px solid var(--line);border-radius:10px;}
 .eyebrow{letter-spacing:.14em;text-transform:uppercase;font-size:12px;color:var(--mute);font-weight:600;}
 h1.title{font-size:34px;line-height:1.15;margin:.25em 0 .1em;font-weight:800;letter-spacing:-.01em;}
 .sub{color:var(--mute);font-size:17px;margin:0 auto 6px;max-width:640px;}
@@ -62,28 +60,23 @@ h1.title{font-size:34px;line-height:1.15;margin:.25em 0 .1em;font-weight:800;let
  padding:3px 12px;font-size:12.5px;font-weight:700;letter-spacing:.02em;margin-top:10px;}
 </style></head><body>
 <header>
-  <div class="eyebrow">Reversible-circuit synthesis · process report</div>
-  <h1 class="title">The flywheel that spun but didn't climb</h1>
-  <p class="sub">Can a small open model learn verifier-backed reversible-circuit synthesis — and improve itself? One result held up. One didn't. The honest write-up.</p>
-  <div class="badge">HONEST NEGATIVE RESULT</div>
-  <div id="hero"></div>
+  <div class="eyebrow">Technical report</div>
+  <h1 class="title">Verifier-Backed Tool Use and the Limits of Self-Harvest Expert Iteration in Small-Model Reversible-Circuit Synthesis</h1>
   <p class="links">
-    Model: <a href="https://huggingface.co/dennisonb/reversible-circuit-8b-tool">🤗 dennisonb/reversible-circuit-8b-tool</a> ·
-    Code &amp; full log: <a href="https://github.com/dennisonbertram/reversible-circuit-llm">GitHub</a>
+    Model: <a href="https://huggingface.co/dennisonb/reversible-circuit-8b-tool">dennisonb/reversible-circuit-8b-tool</a> ·
+    Code &amp; data: <a href="https://github.com/dennisonbertram/reversible-circuit-llm">github.com/dennisonbertram/reversible-circuit-llm</a>
   </p>
+  <img id="hero" src="__HERO__" alt="Held-out solve rate is flat across two rounds of self-harvest expert iteration (best-of-5, 40 tasks/band), well below the 65% target.">
 </header>
 <div class="wrap"><div id="paper" class="paper"></div></div>
 <div class="foot">Generated from the project's process log. Every number traces to the repo's eval data; the paper was drafted, adversarially reviewed, and citation-checked by separate agents.</div>
 <script>
 const PAPER_MD = __MD__;
-const HERO = __LOTTIE__;
 document.getElementById('paper').innerHTML = marked.parse(PAPER_MD);
-try{ lottie.loadAnimation({container:document.getElementById('hero'),renderer:'svg',loop:true,autoplay:true,animationData:HERO}); }
-catch(e){ document.getElementById('hero').style.display='none'; }
 </script>
 </body></html>"""
 
-HTML = HTML.replace("__MD__", md_js).replace("__LOTTIE__", lottie_js)
+HTML = HTML.replace("__MD__", md_js).replace("__HERO__", hero_uri)
 out = os.path.join(HERE, "index.html")
 open(out, "w").write(HTML)
 print("wrote", out, "(", round(os.path.getsize(out)/1024), "KB )")

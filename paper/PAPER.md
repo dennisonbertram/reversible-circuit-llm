@@ -1,219 +1,243 @@
-# Teaching a Small Model to Drive a Verifier-Backed Tool for Reversible-Circuit Synthesis: One Wall Removed, One Plateau Explained
+# Verifier-Backed Tool Use and the Limits of Self-Harvest Expert Iteration in Small-Model Reversible-Circuit Synthesis
 
 > **TL;DR**
-> - **The positive result (solid).** Asked to synthesize a reversible circuit in one shot, a 1.5B and a 7B model succeed at an *identical* 4.8%. The bottleneck is not capacity — it is *symbolic execution* (the model cannot track circuit state in its head). A state-externalizing **tool** removes that wall, and only *then* does scale matter: on the single 1.5B→8B step we observed, a trained 1.5B caps at n=4 while a trained 8B reaches n=5 (~40% at best-of-5, near-ceiling at n=6 ≈ 5%).
-> - **The negative result (clean, and the main scientific content).** A self-harvest "flywheel" (expert iteration on the model's own verifier-confirmed solutions) produced **zero held-out improvement**: base, iter-1, and iter-2 differ by ≤1.2 points overall (58.1 / 56.9 / 58.1 at best-of-5), within the ~4–8 point per-band sampling error at n=40. SFT on a model's own correct outputs re-teaches what it already does; it cannot push the frontier of tasks it currently fails.
-> - **The measurement lesson.** Two "wins" died to better evaluation: an 8-task eval inflated the base to 62.5% (real best-of-2: 51%), and a best-of-2 eval manufactured a "n=6 cracked 0→7.5%" breakthrough that best-of-5 erased (the base already solves n=6 at ~5%). Under-sampling at low solve rates *invents* progress.
-> - **Artifacts.** Model: <https://huggingface.co/dennisonb/reversible-circuit-8b-tool> · Code, data factories, eval harness, full lab notebook: <https://github.com/dennisonbertram/reversible-circuit-llm>
-> - This is a **negative result**, reported as one. We do not claim self-improvement.
+> - On one-shot reversible-circuit synthesis without a tool, a 1.5B and a 7B model of the same family achieve an identical 4.8% solve rate; the limiting factor is symbolic execution of the running circuit, not model capacity.
+> - A state-externalizing tool that renders the residual after each gate removes this bottleneck, and only with the tool does scale appear to become decisive: a trained 1.5B (Qwen2.5-Coder-1.5B) caps at register width n=4, whereas a trained 8B (Qwen3-8B) reaches n=5. Because the two tool-trained models are of different families and generations, this single comparison confounds scale with family and is suggestive rather than a controlled ablation.
+> - Self-harvest expert iteration — supervised fine-tuning on the model's own verifier-confirmed solutions — produces no detectable held-out improvement: base, iter-1, and iter-2 differ by at most 1.2 points overall (58.1 / 56.9 / 58.1% at best-of-5), within per-band sampling error at n=40.
+> - Capability gains observed on the training distribution (harvest B3 yield rising from roughly 36% to 44% over two harvest rounds) do not transfer to held-out tasks (held-out B3 flat at 40 / 37.5 / 35%), isolating a harvest-versus-generalization gap.
+> - Evaluation budget is itself a result: an under-sampled best-of-2 protocol systematically inflates apparent progress in low-solve-rate bands, manufacturing a band "breakthrough" that an adequately-sampled best-of-5 protocol erases.
 
 ## Abstract
 
-We study whether a small open-weight language model can learn to synthesize reversible (quantum-classical) circuits, and whether it can *improve itself* at the task. As a faithful, cheap stand-in for the [ECDSA.fail](https://ecdsa.fail) secp256k1 point-addition challenge, we use a GF(2)-linear-map synthesis proxy graded by register width (n=3…6) and scored by a simulator that agreed with the Rust reference on every case of an 800-case test battery (800/800). We report three findings. First, without a tool the task is a wall that scale does not climb: a 1.5B and a 7B model one-shot-synthesize at an identical 4.8%, identifying the bottleneck as symbolic execution rather than capacity. Second, a state-externalizing tool removes that wall, and with the tool scale becomes decisive — on the single 1.5B→8B step we ran, a trained 1.5B caps at n=4 while a trained 8B reaches n=5. Third, and centrally, a self-harvest expert-iteration "flywheel" produced **no held-out improvement** (base, iter-1, and iter-2 differ by ≤1.2 points overall, ~58% at best-of-5); we explain the plateau mechanistically. Along the way two phantom positive results were created and then destroyed by adequately-sampled evaluation, which we treat as the most transferable lesson of the project. We release the 8B base model (the strongest checkpoint in the study), the code, and the complete lab notebook.
-
-The three flywheel checkpoints are named consistently below: **base → iter-1 → iter-2**, where iter-2 (file label `fly8b_iter1`) was seeded from iter-1. The chain is therefore two sequential self-harvest steps, not two independent runs.
+This report studies whether a small open-weight language model can learn tool-driven synthesis of reversible (classical-reversible / quantum) circuits, and whether it can improve at the task through expert iteration on its own verifier-confirmed solutions. As a cheap and faithfully gradeable stand-in for the [ECDSA.fail](https://ecdsa.fail) secp256k1 point-addition challenge, the task is GF(2) linear-map synthesis: emit a sequence of reversible gates that transforms the identity into a target invertible n×n GF(2) matrix in place. Correctness is decided by a bit-packed classical-reversible simulator that agreed with a Rust reference on all 800 cases of the equivalence battery used, spanning the gate families and register widths exercised by the proxy. Three findings are reported. First, in the one-shot setting the task is insensitive to model scale: a 1.5B and a 7B model of the same family synthesize correctly at an identical 4.8%, locating the bottleneck in symbolic execution rather than capacity. Second, a state-externalizing tool removes this bottleneck, and only then does scale appear to matter: a trained 1.5B caps at n=4 while a trained 8B reaches n=5, on a single cross-family comparison that should be read as suggestive. Third, and centrally, self-harvest expert iteration yields no held-out improvement; across two iterations the overall best-of-5 solve rate is flat at approximately 58%, and the result is explained mechanistically. A subsidiary methodological finding establishes that the conclusion is sensitive to evaluation budget: under-sampling at low solve rates inflates apparent gains in the hardest band.
 
 ---
 
-## 1. Problem and motivation
+## 1. Introduction
 
-The [ECDSA.fail](https://ecdsa.fail) challenge asks for a reversible circuit that computes secp256k1 point addition at minimal cost (roughly, average Toffoli count × peak qubit count). This is a real, open optimization problem: there is no efficient classical method that yields the optimum, and each candidate is expensive to evaluate. We wanted to know whether a *small, open* model could learn this kind of synthesis as a transferable skill, and — more ambitiously — whether it could bootstrap its own improvement.
+The [ECDSA.fail](https://ecdsa.fail) challenge asks for a reversible circuit that computes secp256k1 elliptic-curve point addition at minimal cost, where cost is the executed Toffoli count multiplied by the peak qubit count. This is an open combinatorial-optimization problem: no efficient classical procedure is known to yield the optimum, and each candidate circuit is expensive to evaluate. The question motivating this work is whether a small, open language model can acquire reversible-circuit synthesis as a transferable skill, and whether such a model can bootstrap its own improvement on the task.
 
-Training directly on the 256-bit frontier is infeasible: each evaluation is seconds of Rust simulation and the search space is astronomical. So we built a **proxy task** designed to preserve the structure of the real problem while being cheap enough to iterate on:
+Direct training on the 256-bit frontier is infeasible. Each evaluation requires seconds of reference simulation and the search space is astronomical, so neither large-scale harvesting nor adequately-sampled evaluation is affordable at that width. To make the question tractable, the study uses a **proxy task** chosen to preserve the structure of the target problem — reversible-gate synthesis against a hard target, scored by an exact verifier — while remaining cheap enough to iterate on and to evaluate with sufficient samples. The proxy is the synthesis of reversible circuits for random invertible GF(2) linear maps, graded by register width.
 
-- **Real / verified.** Every candidate is checked by a bit-packed classical-reversible simulator. We confirmed this simulator (`proxy/proxy_env.py`) agreed with the Rust reference on **800/800** cases of a test battery — 400 basic plus 400 broad cases spanning the gate families and register widths used in the proxy (`proxy/test_equivalence.py`). Within that battery the grader is not a weak proxy of correctness; it *is* correctness. (800 agreements do not prove bit-identity in general, but cover the families and widths the experiments actually exercise.)
-- **Gradeable.** Difficulty is register width n, in four bands: **B1 (n=3), B2 (n=4), B3 (n=5), B4 (n=6)**.
-- **Cheap.** Microseconds per check, enabling large harvests and adequately-sampled evals.
-- **Honestly hard.** The model must emit a gate sequence (`CX`, `CCX`/Toffoli, `SWAP`) that transforms the identity into a target GF(2) linear map, in place.
+The GF(2)-linear family is classically solvable by Gaussian elimination, which serves as a source of provably optimal expert demonstrations. The objective is therefore not to outperform Gaussian elimination but to test (i) whether a small model can learn tool-driven synthesis at all, and (ii) whether expert iteration on self-generated, verifier-confirmed solutions can extend the model's reach — a method that would, in principle, transfer to problems for which no closed-form expert exists.
 
-We focus on the `gf2_linear` family: given an invertible n×n GF(2) matrix, synthesize a reversible circuit that applies it. This family is *classically* solvable by Gaussian elimination — which is precisely how we generate **optimal expert demonstrations** (`proxy/synth.py`). The goal is not to beat Gaussian elimination; it is to test whether a small model can *learn tool-driven synthesis* and *self-improve* at it, as a method that might later transfer to problems where no closed-form expert exists.
+The contributions of this report are:
 
-We note up front the gap this proxy does *not* close: the n≤6 GF(2) family is a long way from a 256-bit non-linear point-addition circuit. Whether anything here transfers to the real frontier is entirely unexplored (§8, §9).
+1. A diagnosis that one-shot reversible-circuit synthesis is bottlenecked by symbolic execution rather than model capacity, evidenced by an identical 4.8% solve rate at 1.5B and 7B parameters within a single model family (§3).
+2. Evidence that a state-externalizing, verifier-backed tool removes this bottleneck and renders the task scale-sensitive, with a trained 1.5B capped at n=4 and a trained 8B reaching n=5; this rests on a single cross-family comparison and is reported as suggestive rather than as a controlled scale ablation (§3).
+3. A clean negative result: self-harvest expert iteration produces no held-out improvement over two iterations, with a mechanistic explanation (§5, §7).
+4. A methodological result: the conclusion is sensitive to evaluation budget, and under-sampling at low solve rates systematically inflates apparent gains in the hardest band (§6).
 
 ---
 
-## 2. The symbolic-execution wall (1.5B == 7B == 4.8%)
+## 2. Task and evaluation setup
 
-Our first experiment was the obvious one: ask the model to emit the whole circuit in one shot (an `OP-STREAM` of gates), then verify it.
+### 2.1 The gf2_linear proxy
+
+The synthesis family studied is `gf2_linear`. An instance is a uniformly sampled invertible n×n matrix over GF(2). A solution is a sequence of reversible gates — controlled-NOT (`CX`), Toffoli (`CCX`), and `SWAP` — that, applied in place to an n-bit register initialized to the identity transformation, realizes multiplication by the target matrix. The model emits gates; the environment maintains the running transformation and compares it against the target.
+
+Difficulty is parameterized by register width n and partitioned into four bands:
+
+| Band | Register width n |
+|------|------------------|
+| B1 | 3 |
+| B2 | 4 |
+| B3 | 5 |
+| B4 | 6 |
+
+The small-width bands saturate quickly: there are only 168 invertible 3×3 matrices over GF(2), so an expert demonstration set nearly exhausts B1 and B2. Genuinely novel coverage is available only at n≥5; the n=5 instance space comprises on the order of 10^7 matrices.
+
+### 2.2 The verifier and its equivalence battery
+
+Correctness is decided by a bit-packed classical-reversible simulator (`proxy/proxy_env.py`). To establish that the simulator is an exact arbiter rather than a learned approximation of correctness, it was checked against a Rust reference simulator on an 800-case equivalence battery (`proxy/test_equivalence.py`): 400 basic cases and 400 broad cases spanning the gate families and register widths exercised by the proxy. The simulator agreed with the reference on **800 of 800** cases. Within this battery, a circuit accepted by the simulator is correct in the same sense that the reference would accept it. This is an empirical agreement over the families and widths actually used; it is not a general proof of bit-identity across all inputs.
+
+### 2.3 Expert demonstrations
+
+Optimal expert demonstrations are produced by Gaussian elimination (`proxy/synth.py`), which yields a canonical, minimal-style gate sequence for any invertible target. These demonstrations supply both the imitation-learning corpus for the base model and the ground-truth reference for the difficulty grading.
+
+### 2.4 Evaluation protocol
+
+All held-out evaluations use a fixed set of **40 tasks per band**, with seeds held constant across the base model and every iteration so that every checkpoint is scored on the identical instances under an identical protocol. Each checkpoint is evaluated under **best-of-k** sampling: the model is given k independent attempts per task and the task counts as solved if the verifier accepts any attempt, in the manner of a verifier selecting the best of several candidate circuits. Two protocols are reported: best-of-2 at sampling temperature 0.4, and best-of-5 at temperature 0.7. The best-of-5 budget matches the five restarts per task used during harvesting (§4), and is the primary, adequately-sampled protocol. Because the two protocols differ in both the number of attempts k and the temperature, the contrast between them (§6) reflects both knobs and is not attributable to k in isolation. The best-of-2 protocol is reported for the methodological contrast it establishes.
+
+---
+
+## 3. Tool use and the role of scale
+
+### 3.1 The one-shot wall: 1.5B = 7B = 4.8%
+
+In the one-shot setting the model emits an entire gate sequence in a single generation, which the verifier then accepts or rejects. Two models of substantially different scale but the same family were measured on held-out tasks:
 
 | Model | One-shot synthesis (held-out) |
-|------|------|
+|-------|-------------------------------|
 | Qwen2.5-Coder-1.5B | 4.8% |
 | Qwen2.5-Coder-7B | 4.8% |
 
-The two rates are **identical**. Scaling the model roughly 5× did *nothing*. This is the fingerprint of a bottleneck that is not capacity: the model cannot mentally simulate the running circuit state across many gates, so it cannot tell whether its partial sequence is on track. It is synthesizing blind.
+The two solve rates are identical. A roughly fivefold increase in parameters within one model family produces no change in performance, which is the signature of a bottleneck that scale does not address. The limiting skill is symbolic execution: the model cannot maintain the running circuit state across a growing gate sequence, and therefore cannot determine whether a partial sequence is on track. It synthesizes without feedback.
 
-![1.5B and 7B one-shot synthesis are identical at 4.8% — the wall is symbolic execution, not capacity.](figures/fig1_the_wall.png)
+![One-shot synthesis at 1.5B and 7B is identical at 4.8%; the limiting factor is symbolic execution, not model capacity.](figures/fig1_the_wall.png)
 
-The lesson, paid for before we wrote any training code: *diagnose which wall you are hitting before reaching for a bigger model.* Here, more parameters were worthless because the limiting skill — symbolic execution of a growing circuit — is not what scale improves.
+The diagnostic implication is that the appropriate intervention is not a larger model but a mechanism that relieves the model of internal state-tracking.
 
----
+### 3.2 The tool: externalizing circuit state
 
-## 3. The tool intervention, and the point at which scale starts to matter
-
-We built **`ToolEnv`** (`proxy/tooluse.py`): a stateful environment the model drives one gate per turn. After each gate, the tool re-renders the **current state versus the target**. For `gf2_linear`, it shows the *residual rows*, for example:
+The intervention is a stateful environment, `ToolEnv` (`proxy/tooluse.py`), that the model drives one gate per turn. After each gate the environment re-renders the current transformation against the target. For `gf2_linear` it displays the residual rows, for example:
 
 ```
 current y0 = x0 | target y0 = x0^x2^x4   <-- WRONG
 ```
 
-The model no longer has to simulate in its head; it reacts to an externalized, always-correct view of what is still wrong. This mirrors how a human row-reduces while looking at the board.
+The model no longer simulates the circuit internally; it reacts to an externalized, always-correct view of the remaining discrepancy, in the manner of a human performing row reduction against a visible tableau.
 
-Two immediate sub-findings shaped everything after:
+Two properties of this setting shape the rest of the study. First, untrained zero-shot tool use does not succeed: untrained models emit malformed operations, reverse their own progress, and loop. Access to the state is necessary but not sufficient — the model must be trained to act on it. The bottleneck thus moves from state-tracking to sequential planning. Second, the residual render is **Markov**: the current residual fully specifies the remaining problem, independent of how it was reached, a property used in the harvesting design (§4).
 
-- **Zero-shot tool use thrashes.** Untrained models emit ill-formed ops, undo their own progress, and loop. Having the state is not enough — the model must know what to *do* with it. (Consistent with our earlier finding that state-externalization alone does not beat the reasoning ceiling; the model must be *trained* to plan in the tool.)
-- **The bottleneck moved, from state-tracking to sequential planning.** The tool is necessary but not sufficient.
+Tool-driven training data is produced by a trace factory (`proxy/tooltrace_gen.py`) that records expert turn-by-turn play, one canonical operation per turn, framed identically to the evaluation interface so that the training and evaluation distributions coincide. Including the target truth table in the prompt is necessary to fully specify each instance; doing so raised the count of distinct tasks to 31,718.
 
-We then built data factories for tool-driven traces (`proxy/tooltrace_gen.py`): expert demonstrations of the turn-by-turn play (one canonical op per turn), framed identically to how the model is evaluated (train == eval). One subtlety cost us real diversity early: omitting the truth table from prompts made targets underspecified and capped distinct tasks at ~2,300; including it unlocked 31,718 distinct tasks (a 14× increase).
+### 3.3 With the tool, scale matters
 
-**With the tool, scale does what it refused to do without it.** Training models on the tool-driven traces and evaluating them *driving the tool* on held-out tasks:
+Models trained on tool-driven traces and evaluated while driving the tool on held-out tasks exhibit a scale dependence absent in the one-shot setting:
 
 | Model (trained, tool-driven) | Top solvable band |
-|------|------|
-| 1.5B | B2 (n=4) — caps here; **0% at B3 even when trained on B3 data** |
-| 8B | B3 (n=5) — solvable, materially above zero |
+|------------------------------|-------------------|
+| Qwen2.5-Coder-1.5B | B2 (n=4); remains at 0% on B3 even when trained directly on B3 |
+| Qwen3-8B | B3 (n=5); materially above zero |
 
-The 1.5B's failure at n=5 is a genuine **capacity ceiling**, not a data problem: it stays at 0% on B3 even when trained directly on B3. The same two models that were *identical* without the tool are a full band apart with it. Tooling converted a capacity-insensitive task into a capacity-sensitive one. On the single 1.5B→8B step we observed — one data point, not a trend — each ~5× of parameters bought roughly one more bit of width.
+The 1.5B's failure at n=5 is a capacity ceiling rather than a data limitation: it stays at 0% on B3 even when trained on B3 instances. The two models that were indistinguishable without the tool are a full band apart with it. The tool converts a capacity-insensitive task into a capacity-sensitive one.
 
-This also tells us *which* base to use for self-improvement. The small-n space saturates: there are only ~168 invertible 3×3 GF(2) matrices total, so the expert set already nearly exhausts B1/B2. New coverage can only come at n≥5 (n=5 ≈ 10M matrices) — exactly where only the 8B can play. The 1.5B is therefore the wrong base for a flywheel; the 8B is the real attempt.
+This comparison should be read with care. The tool-trained 1.5B is `Qwen2.5-Coder-1.5B-Instruct` and the tool-trained 8B is `Qwen3-8B` — a different model family **and** a different generation, not two sizes of one architecture. The size ratio is also closer to 5.3× than to a clean fivefold. The comparison therefore confounds parameter count with family and generation, and the gain of one additional bit of register width is a single observation rather than a controlled scale curve. It is reported as suggestive evidence that scale helps once the tool is present, not as a measured scaling law.
+
+This scale dependence nonetheless determines the appropriate base for self-improvement. Because B1 and B2 are nearly exhausted by the expert set, any novel coverage must come at n≥5, precisely the regime in which only the 8B operates. The 1.5B is therefore an unsuitable base for expert iteration, and the 8B is the relevant subject for the remainder of the study.
 
 ---
 
-## 4. The self-harvest flywheel (method)
+## 4. Method: self-harvest expert iteration
 
-The flywheel is expert iteration / STaR-flavored self-training, run inside the tool:
+The self-improvement procedure is expert iteration in the STaR family, executed inside the tool. One iteration consists of three stages:
 
-1. **Harvest.** Drive the latest model over fresh training tasks (best-of-N sampling). Keep **every verifier-confirmed solution** as new training data, in the exact eval framing, retaining the cheapest play per task.
-2. **Combine.** Dedup expert + harvested solutions per task into a cumulative replay buffer.
-3. **Retrain → merge → eval.** Run fresh LoRA SFT on the cumulative set; score against a fixed held-out set.
+1. **Harvest.** The current model drives the tool over fresh training tasks under best-of-5 sampling — five restarts per task, with 120 attempts per band recorded. Every verifier-confirmed solution is retained as new training data in the exact evaluation framing, keeping the lowest-cost play per task. Because the residual render is Markov, a rollout that fails to reduce its residual-mismatch count for a fixed number of turns is abandoned, and the live context window is bounded without loss of information; both keep harvesting tractable at the harder bands.
+2. **Combine.** Harvested solutions are deduplicated against the expert demonstrations per task to form a cumulative replay buffer, preserving harvested traces, which are scarcer than synthesis-optimal expert demonstrations.
+3. **Retrain, merge, evaluate.** Fresh LoRA supervised fine-tuning is run on the cumulative set, the adapter is merged, and the resulting checkpoint is scored against the fixed held-out set.
 
-The intended mechanism: the model's own successes become the next round's curriculum, and improvement compounds.
+The intended mechanism is that the model's own verifier-confirmed successes become the next round's curriculum, so that capability compounds across iterations.
 
-Two engineering fixes made iteration affordable, and one bookkeeping bug nearly poisoned the experiment:
+### 4.1 The 8B imitation base
 
-- **Drop-on-no-progress.** Early harvests took ~3.3 hours because *stuck rollouts ran out the full turn budget* (84 turns × 5 restarts) on tasks the model could not solve. We track the residual mismatch count and abandon a rollout if it has not improved for ~10 turns. Because the render is **Markov** (the current residual fully specifies the remaining problem), we also cut the live context window from 22 turns to 8 — ~2.5× less prefill at no loss. Harvest time dropped from ~3.3h toward minutes-to-~1h.
-- **The cap was subtracting expert data (a bug, since fixed).** We capped the replay buffer at 1000 traces/band to bound SFT time — but the base trained on 1200 demos/band, so the "cumulative" set initially had *fewer* hard-band demos than the base. The cap was net-*subtracting* signal on exactly the bands that matter. We raised the cap to 1500 and made `combine.py` always preserve harvested traces (they are scarcer than synth-optimal expert demos and a naive cheapest-N cap silently discarded them). This bug existed but, per §6, is not what caused the plateau — the plateau is intrinsic to self-harvest.
-
-**The 8B base.** We trained Qwen3-8B on a B4-rich compact trace set (1200 optimal demos/band for the hard bands). Straight from imitation it is already strong on n≤4 and has a hole at n=6:
+The base model is `Qwen/Qwen3-8B`, fine-tuned via LoRA on a B4-rich compact trace set of 1,200 optimal expert demonstrations per hard band. Straight from imitation it is strong on n≤4 and has a hole at n=6:
 
 | Eval | B1 | B2 | B3 | B4 | Overall |
 |------|----|----|----|----|---------|
-| 8-task/band (noisy) | 100% | 87.5% | 62.5% | 0% | 62.5% |
-| **40-task/band (clean, best-of-2, temp 0.4)** | **95%** | **85%** | **25%** | **0%** | **51.2%** |
+| 8-task/band (under-sampled) | 100% | 87.5% | 62.5% | 0% | 62.5% |
+| 40-task/band, best-of-2, temp 0.4 | 95% | 85% | 25% | 0% | 51.2% |
 
-This is the checkpoint we iterate from, and (spoiler) the strongest one we produced.
+The 8-task figures are reported only to anchor the methodological discussion in §6; the 40-task best-of-2 row is the reliable measurement. This checkpoint is the subject of the two subsequent self-harvest iterations, labeled **base → iter-1 → iter-2**, where iter-2 is seeded from iter-1. The chain is therefore two sequential self-harvest steps.
 
 ---
 
-## 5. Results — the negative result
+## 5. Results
 
-We evaluated the base and the two flywheel iterations (iter-1 and iter-2, where iter-2 = `fly8b_iter1` seeded from iter-1) on a fixed held-out set of 40 tasks/band, same seeds, identical protocol, scored on every checkpoint. We report two protocols, and the difference between them is itself a result. **The two protocols differ in both the number of samples (k) and the sampling temperature** — best-of-2 at temp 0.4, best-of-5 at temp 0.7 — so framing the gap as "k alone" below is a simplification; both knobs move.
+### 5.1 The flywheel curve is flat
 
-### 5.1 Best-of-2 (the protocol that misled us)
-
-| Stage | B1 | B2 | B3 | B4 | Overall | Note |
-|------|----|----|----|----|---------|------|
-| 8B base | 95% | 85% | 25% | **0%** | 51.2% | B4 0/40 — but this is best-of-2 *under-sampling* |
-| 8B iter-1 | 97.5% | 82.5% | 20% | **7.5%** | 51.9% | "B4 cracked" — artifact |
-| 8B iter-2 | 97.5% | 85% | 22.5% | **2.5%** | 51.9% | flat |
-
-Read naively, this table says the flywheel cracked n=6: B4 went 0% → 7.5%, with overall flat because B1/B2 are saturated and B3 is within noise. That is the story we believed and wrote up. It is wrong.
-
-### 5.2 Best-of-5 (the fair eval, and the verdict)
-
-We re-ran all three checkpoints at best-of-5 (temp 0.7), matching how the model is actually used (multiple attempts, verifier picks the winner). The numbers below are taken directly from `flywheel/bo5_results.jsonl`.
+The base and the two self-harvest iterations were scored on the fixed 40-task-per-band held-out set at best-of-5 (temperature 0.7), the adequately-sampled primary protocol. The figures below are taken directly from `flywheel/bo5_results.jsonl`:
 
 | Stage | B1 | B2 | B3 | B4 | Overall |
-|------|----|----|----|----|---------|
+|-------|----|----|----|----|---------|
 | 8B base | 95% | 92.5% | 40% | 5.0% | **58.1%** |
 | 8B iter-1 | 100% | 82.5% | 37.5% | 7.5% | 56.9% |
 | 8B iter-2 | 100% | 92.5% | 35% | 5.0% | **58.1%** |
 
-**The three checkpoints differ by ≤1.2 points overall (58.1 / 56.9 / 58.1), well within the ~4–8 point per-band sampling error at n=40. The flywheel produced no detectable held-out improvement.** Our target was ≥65% overall with B4 > 0; the model sits at ~58% best-of-5 and does not move with iteration.
+The three checkpoints differ by at most 1.2 points overall (58.1 / 56.9 / 58.1), well within the per-band sampling error at n=40, which at solve rates near 0.4 corresponds to a binomial standard error of approximately 7.7 points. Self-harvest expert iteration produces no detectable held-out improvement. The target of ≥65% overall with B4 > 0 is not reached; the model sits at approximately 58% best-of-5 and does not move with iteration.
 
-![8B base by band at best-of-5: solves n=5 at ~40%, near-ceiling (5%) at n=6.](figures/fig2_base_by_band.png)
+![At best-of-5 the 8B base solves n=5 at 40% and reaches the near-ceiling 5% at n=6.](figures/fig2_base_by_band.png)
 
-![The flywheel curve is flat: base 58.1, iter-1 56.9, iter-2 58.1 — within sampling noise at n=40.](figures/fig3_flywheel_flat.png)
+![The self-harvest curve is flat: overall best-of-5 is 58.1 / 56.9 / 58.1 across base, iter-1, and iter-2, within sampling noise at n=40.](figures/fig3_flywheel_flat.png)
 
-Two corrections fall out, and both matter:
+### 5.2 Harvest gains do not generalize
 
-1. **"B4 cracked 0 → 7.5%" was a measurement artifact.** At best-of-5 the *base already solves B4 at 5%* (2/40). It was never truly 0 — with only 2 attempts it got an unlucky 0/40 draw. The flywheel did not crack n=6; the base was already there. The companion "5 self-solutions beat 1200 expert demos on n=6" story dissolves entirely under the fair eval.
-2. **The harvest gains did not generalize.** On *training* tasks the harvest yield rose between the two measured rounds (B3 35.8% → 44.2% best-of-5, i.e. 43/120 → 53/120; B4 harvest doubled from 4.2% to 8.3%, 5/120 → 10/120). But held-out best-of-5 B3 is, if anything, slightly lower (40% → 37.5% → 35%, i.e. 16/40 → 15/40 → 14/40). That held-out drift is one sample per step and well inside binomial noise (at p≈0.4, n=40, SE ≈ 7.7 points), so we decline to read a direction into it. What it does *not* show is held-out improvement: the model got better at producing solutions on the *training distribution* without that translating to the held-out set.
+The capability measured on the training distribution and the capability measured on held-out tasks diverge. On training tasks, the best-of-5 harvest yield at B3 rose across the two harvest rounds from approximately 36% (43 of 120) to 44% (53 of 120), and the B4 harvest yield rose from 4.2% (5 of 120) to 8.3% (10 of 120). The B4 movement is a 5-solve-versus-10-solve change on 120 attempts and is itself small-sample; it is reported as a training-distribution observation, not a robust effect. Held-out best-of-5 B3, by contrast, is flat to slightly lower across the same stages: 40% → 37.5% → 35% (16/40 → 15/40 → 14/40). The held-out drift is one sample per step and lies well inside binomial noise, so no direction is read into it; what the data establish is the absence of held-out improvement. The model became better at producing solutions on the training distribution without that capability transferring to the held-out set. Harvest yields are recorded in `flywheel/fly8_history.json` and `flywheel/fly8b_history.json`.
 
-![The two phantoms on B4: best-of-2 shows a 0→7.5% "breakthrough"; best-of-5 shows the base was already at 5% and the curve is flat.](figures/fig4_measurement_lesson.png)
+![Harvest yield on training tasks rises across rounds while held-out generalization remains flat, isolating a harvest-versus-generalization gap.](figures/fig5_harvest_vs_eval.png)
 
-![Harvest (training-task) capability rose between the two measured rounds while held-out generalization stayed flat.](figures/fig5_harvest_vs_eval.png)
-
-A separate **B4 ceiling probe** — a B4-only harvest **on training tasks (not held-out)** from the base, over 400 fresh tasks at best-of-6 — yielded ~3.5% (14 solves out of 400). So n=6 is genuinely near the 8B's ceiling even on the training distribution, and self-harvest is a slow lever there: too slow, per the held-out eval, to shift capability at all.
+A dedicated B4 ceiling probe corroborates that n=6 is near the model's intrinsic limit even on the training distribution: a B4-only harvest from the base over 400 fresh training tasks at best-of-6 yielded approximately 3.5% (14 of 400). Self-harvest is therefore a slow lever at the frontier band, and — per the held-out evaluation — too slow to shift held-out capability at all.
 
 ---
 
-## 6. Why it plateaus (mechanism)
+## 6. Sensitivity of conclusions to evaluation budget
 
-The plateau is not a bug; it is what self-harvest expert iteration *does* on a task already saturated at the model's ceiling. STaR-style self-training adds signal only when the harvested solutions teach the model to solve things it *couldn't* before. Here that condition fails on every band:
+The verdict in §5 depends on adequate sampling. Under an under-sampled protocol the same checkpoints support a materially different and incorrect conclusion. This sensitivity is a methodological result in its own right.
 
-- **The harvest is dominated by tasks the model already solves.** B2 is saturated; B3 is solved often enough that most harvested traces are redundant with what the base already knows. Training on them re-teaches the existing distribution and adds no new information.
-- **The frontier solves are too few and too noisy.** The rare B4 (n=6) successes (~2–8% on training-task harvests) are not enough to shift the boundary, and they are themselves at the edge of sampling noise.
-- **The base has already extracted what imitation can give.** It was trained on 1200 *optimal* expert demonstrations per band and sits at the 8B's capability ceiling (~58% best-of-5) for this task. Iterating on its own outputs cannot exceed that ceiling; it can only re-learn the same distribution.
+### 6.1 The best-of-2 reading
 
-Put plainly: **SFT on a model's own verified solutions cannot exceed the model's own solution distribution.** To push the frontier — the tasks it currently fails — you need a method that optimizes for currently-failed tasks, not one that imitates current successes.
+At best-of-2 (temperature 0.4), the same three checkpoints, scored from `flywheel/clean_eval_results.jsonl`:
 
-This is also why a parallel 1.5B "does the loop even run?" validation run should *not* be read as evidence of effectiveness. It ran end-to-end across three iterations (proving the plumbing works), but only at **6 tasks/band**. Its overall sequence is non-monotone — 0.25 → 0.375 → 0.292 → 0.417 — going up, then down, then up; and the only band that "rose," B3, moved 0/6 → 1/6 → 1/6. That is exactly the small-sample wobble §7 warns against. The durable takeaway from this run is narrow: the loop runs without breaking.
+| Stage | B1 | B2 | B3 | B4 | Overall |
+|-------|----|----|----|----|---------|
+| 8B base | 95% | 85% | 25% | 0% | 51.2% |
+| 8B iter-1 | 97.5% | 82.5% | 20% | 7.5% | 51.9% |
+| 8B iter-2 | 97.5% | 85% | 22.5% | 2.5% | 51.9% |
+
+Read in isolation, this table indicates that iteration cracked the n=6 band, with B4 rising from 0% to 7.5% while overall performance remained flat because B1 and B2 are saturated and B3 is within noise. The best-of-5 protocol shows this reading to be an artifact.
+
+### 6.2 The under-sampling artifact
+
+At best-of-5 the base already solves B4 at 5% (2 of 40). The base was never truly at 0% on n=6; with only two attempts it drew an unlucky 0 of 40. Self-harvest did not open the frontier band — the base was already there.
+
+| B4 solve rate | base | iter-1 | iter-2 |
+|---------------|------|--------|--------|
+| best-of-2 | 0% | 7.5% | 2.5% |
+| best-of-5 | 5% | 7.5% | 5% |
+
+![The B4 band under two protocols: best-of-2 displays an apparent 0→7.5% breakthrough, while best-of-5 shows the base already at 5% and the curve essentially flat.](figures/fig4_measurement_lesson.png)
+
+The mechanism is general. Under-sampling at low solve rates does not merely add variance; it systematically biases comparisons toward inventing progress. A checkpoint with a true solve rate near 5% frequently draws 0 of 40 at two attempts, so any later non-zero draw — itself well within sampling noise — reads as a newly acquired capability. The same under-sampling effect explains the 8-task base figure of 62.5% reported in §4.1: a lucky 5-of-8 draw on B3 implied a 62.5% band rate against a true best-of-2 rate near 25%, inflating the overall figure to 62.5% against a true 51.2%.
+
+The methodological conclusion is that at low solve rates one must report best-of-k, hold both k and temperature fixed across all comparisons, and never compare across protocols. A fixed, adequately-sampled, identical-protocol held-out set anchored to the base at the same k and temperature is what separates the genuine finding of §3 from the apparent gains visible under best-of-2.
 
 ---
 
-## 7. The measurement-discipline lesson (two phantoms)
+## 7. Discussion: why self-harvest does not improve the frontier
 
-The single most useful output of this project is a discipline, not a model: **most of our apparent progress was measurement noise.** Two separate "wins" died the moment we measured them properly.
+The plateau is the expected behavior of self-harvest expert iteration on a task already saturated at the model's capacity ceiling. STaR-style self-training adds signal only when the harvested solutions teach the model to solve instances it previously could not. On this task that condition fails on every band:
 
-**Phantom 1 — the 62.5% base.** An 8-task/band eval read the base at 62.5% overall, driven by a lucky 5/8 draw on B3 that implied a 62.5% B3 rate. The real best-of-2 figure is 51.2% overall with B3 ≈ 25%. At 8 samples/band a single band swings ±25 points on luck. This phantom also caused a *wrong decision*: a flywheel iteration's 8-task eval looked like a B3 regression (down from the inflated 62.5%), so we killed the run early — when in fact iter-1's B3 *matched* the true base.
+- **The harvest is dominated by already-solved tasks.** B2 is saturated and B3 is solved often enough that most harvested traces are redundant with what the base already knows. Fine-tuning on them re-teaches the existing solution distribution and introduces no new information.
+- **The frontier solves are too few and too noisy.** The rare B4 successes — on the order of a few percent of training-task harvests — are insufficient to shift the boundary and are themselves at the edge of sampling noise.
+- **Imitation has already been exhausted.** The base was trained on 1,200 optimal expert demonstrations per band and sits at the 8B's capability ceiling of approximately 58% best-of-5 for this task. Iterating on its own outputs cannot exceed that ceiling; it can only relearn the same distribution.
 
-**Phantom 2 — the B4 "breakthrough."** As shown in §5, a best-of-2 eval manufactured a 0% → 7.5% B4 gain that best-of-5 erased; the base already solved n=6 at 5%. Under-sampling at low solve rates does not merely add variance — it systematically *invents* progress, because a base with a true 5% rate frequently draws 0/40 at 2 attempts, making any later non-zero draw look like a new capability.
-
-The fix was cheap and high-leverage: a **fixed, adequately-sampled, identical-protocol held-out set** (40 tasks/band, same seeds) scored on the base and every iteration, reporting best-of-k and anchoring every comparison against the base at the *same* k *and the same temperature*. That instrument is what separated the one real finding (the tool removes the wall; scale then matters) from the two phantoms. The transferable rule: at low solve rates, report best-of-k, hold both k and temperature fixed, and never compare across different protocols.
+The general statement is that supervised fine-tuning on a model's own verifier-confirmed solutions cannot exceed the model's own solution distribution. Extending the frontier — the set of currently-failed tasks — requires a method that optimizes for currently-failed tasks rather than one that imitates current successes.
 
 ---
 
 ## 8. Limitations
 
-- **Negative result, narrow scope.** "Self-harvest does not improve the model" is established for *this* task, *this* base (Qwen3-8B), and *this* SFT recipe. It is not a claim about expert iteration in general.
-- **Proxy ≠ target.** The GF(2)-linear family at n≤6 is far from a 256-bit non-linear point-addition circuit. We never attempted the real ECDSA.fail frontier; transfer is entirely unexplored.
-- **The expert is a closed-form algorithm.** Because Gaussian elimination supplies optimal demonstrations, the base is already near-ceiling from imitation — which is part of *why* self-harvest has no room to add. On a task with no efficient expert, the dynamics could differ.
-- **Ceiling vs. method.** We cannot fully separate "self-harvest is the wrong method" from "the 8B is simply at its capacity ceiling." Both are consistent with the data; a larger base would help disentangle them.
-- **One scale step.** The "scale buys width" observation rests on a single 1.5B→8B comparison at one task family — one data point, not a trend.
-- **Two iterations.** We ran two flywheel iterations before the fair eval confirmed the plateau and we stopped (no iter-3). We do not claim what an asymptotically long loop would do — only that there is no signal of upward motion in the first two, and a mechanism that predicts none.
-- **Modest absolute scale.** Larger sweeps (more iterations, larger bases, RL) were out of scope.
+- **Negative result, narrow scope.** The conclusion that self-harvest does not improve held-out capability is established for this task, this base (Qwen3-8B), and this supervised fine-tuning recipe. It is not a claim about expert iteration in general.
+- **Proxy is not the target.** The GF(2)-linear family at n≤6 is far removed from a 256-bit non-linear point-addition circuit. The real ECDSA.fail frontier was not attempted, and transfer is entirely unexplored.
+- **The expert is a closed-form algorithm.** Because Gaussian elimination supplies optimal demonstrations, the base is already near its imitation ceiling, which is part of why self-harvest has no room to add. On a task with no efficient expert, the dynamics could differ.
+- **Ceiling versus method.** The data are consistent both with "self-harvest is the wrong method" and with "the 8B is at its capacity ceiling," and these explanations are not fully separable here; a larger base would help disentangle them.
+- **One scale step, and a family confound.** The observation that scale buys register width rests on a single comparison at one task family — one data point, not a trend. That comparison is also cross-family and cross-generation (Qwen2.5-Coder-1.5B versus Qwen3-8B), so it confounds parameter count with model family and generation; it cannot isolate scale as the cause and should be read as suggestive only.
+- **Two iterations.** The plateau is established over two sequential iterations under the fair evaluation; the asymptotic behavior of a much longer loop is not claimed, only that no upward motion appears in the first two and that a mechanism predicting none is identified.
 
 ---
 
 ## 9. Future work
 
-The negative result is specific — SFT on self-solves cannot exceed the model's own distribution — which points directly at the levers it does *not* cover:
+The negative result is specific — supervised fine-tuning on self-solves cannot exceed the model's own distribution — which points directly to levers it does not cover.
 
-1. **RL with the verifier reward (GRPO).** The natural fix: a policy-gradient method can reward the model for *solving tasks it currently fails*, which is exactly what SFT-on-self-solves cannot do. Earlier GRPO attempts collapsed via format-reward hacking; the fix is a strictly validity-gated, verifier-grounded reward (reward only on a *verified-correct* circuit, shaped by cost). Driving the **tool** under GRPO, with per-gate credit assignment against the residual, is the most promising untried configuration.
-2. **A frontier curriculum.** Grade n=5/n=6 tasks by intrinsic difficulty (off-diagonal pivots / minimal solution length) and train easy→hard, so the model climbs the frontier rather than being handed only the hardest instances. Composes with either SFT or RL.
-3. **A larger base.** Since the one robust positive is "with the tool, scale matters," the cleanest way up may simply be a bigger base (14B/30B) — and that would also disentangle "wrong method" from "model ceiling."
-4. **Transfer.** The unaddressed question: does tool-driven synthesis learned on the n≤6 proxy carry to the real 256-bit secp256k1 frontier at all?
+1. **Reinforcement learning with a verifier reward (GRPO).** A policy-gradient method can reward the model for solving tasks it currently fails, which is precisely what supervised fine-tuning on self-solves cannot do. The reward must be strictly validity-gated and verifier-grounded — awarded only on a verified-correct circuit and shaped by cost — to avoid format-reward hacking. Driving the tool under GRPO, with per-gate credit assignment against the residual, is the most promising untried configuration.
+2. **A difficulty curriculum at the frontier.** Grading n=5 and n=6 instances by intrinsic difficulty — for example by the number of off-diagonal pivots or minimal solution length — and training easy-to-hard would let the model climb the frontier rather than being handed only the hardest instances. This composes with either supervised fine-tuning or reinforcement learning.
+3. **A larger base.** Since scale is implicated as a lever once the tool is present, a larger base (14B or 30B) is a direct route upward and would also help separate "wrong method" from "model ceiling" — and, with a within-family series, would turn the suggestive scale observation of §3.3 into a controlled measurement.
+4. **Transfer.** Whether tool-driven synthesis learned on the n≤6 proxy carries to the real 256-bit secp256k1 frontier remains unaddressed.
 
 ---
 
 ## 10. Artifacts and reproducibility
 
-- **Model (the SFT base — the strongest checkpoint in the study):** <https://huggingface.co/dennisonb/reversible-circuit-8b-tool>
-- **Code, data factories, eval harness, and the complete lab notebook:** <https://github.com/dennisonbertram/reversible-circuit-llm>
-- **Verifier.** `proxy/proxy_env.py` agreed with the Rust reference simulator on **800/800** cases of the equivalence battery (`proxy/test_equivalence.py`: 400 basic + 400 broad cases across the gate families and widths the proxy uses); within that battery, correctness in this paper means a circuit the reference accepts, not a learned proxy of correctness.
-- **Eval data.** Best-of-2 results (temp 0.4): `flywheel/clean_eval_results.jsonl`. Best-of-5 results (temp 0.7): `flywheel/bo5_results.jsonl`. Both are 40 tasks/band, same fixed held-out seeds across base / iter-1 / iter-2.
-- **Method.** Base: `Qwen/Qwen3-8B` (Apache-2.0). LoRA SFT via Unsloth/TRL on Modal. Tool environment: `proxy/tooluse.py`; expert demos: `proxy/synth.py`; trace factory: `proxy/tooltrace_gen.py`; flywheel harvest/combine: `flywheel/`, `train/flywheel_harvest.py`.
-
-We ship the **base** because the flywheel iterations did not beat it.
+- **Verifier.** `proxy/proxy_env.py` agreed with the Rust reference simulator on 800 of 800 cases of the equivalence battery (`proxy/test_equivalence.py`: 400 basic plus 400 broad cases across the gate families and widths used by the proxy). Correctness in this report means a circuit the reference accepts on this battery, not a learned proxy of correctness; the agreement is empirical over the families and widths used, not a general proof of bit-identity.
+- **Evaluation data.** Best-of-2 results (temperature 0.4): `flywheel/clean_eval_results.jsonl`. Best-of-5 results (temperature 0.7): `flywheel/bo5_results.jsonl`. Both use 40 tasks per band on a fixed held-out seed set shared across base, iter-1, and iter-2. Harvest yields: `flywheel/fly8_history.json` and `flywheel/fly8b_history.json`.
+- **Method.** Base: `Qwen/Qwen3-8B` (Apache-2.0), LoRA supervised fine-tuning via Unsloth/TRL on Modal. The one-shot scale comparison (§3.1) uses Qwen2.5-Coder-1.5B and Qwen2.5-Coder-7B; the tool-trained scale comparison (§3.3) uses Qwen2.5-Coder-1.5B-Instruct and Qwen3-8B. Tool environment: `proxy/tooluse.py`; expert demonstrations: `proxy/synth.py`; trace factory: `proxy/tooltrace_gen.py`; harvest and combine pipeline: `flywheel/`, `train/flywheel_harvest.py`.
 
 ---
 
 ## References
 
-- E. Zelikman, Y. Wu, J. Mu, N. D. Goodman. *STaR: Bootstrapping Reasoning With Reasoning.* NeurIPS, 2022. (Self-training on a model's own verifier-confirmed solutions — the family of method our flywheel instantiates.)
-- A. Anthony, Z. Tian, D. Barber. *Thinking Fast and Slow with Deep Learning and Tree Search.* NeurIPS, 2017. (Expert iteration — the alternate name for the bootstrap-on-own-solutions loop.)
-- Z. Shao, P. Wang, Q. Zhu, et al. *DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models.* 2024. (Introduces GRPO, the verifier-reward policy-gradient method proposed in §9.)
-- The ECDSA.fail reversible-circuit challenge. <https://ecdsa.fail>
-
-*(We deliberately omit citations we could not attribute with confidence — including the specific provenance of "RLVR" / verifier-reward RL and best-of-n sampling as named techniques — rather than guess. Those methods are used here as described in the text without attribution.)*
+- E. Zelikman, Y. Wu, J. Mu, N. D. Goodman. *STaR: Bootstrapping Reasoning With Reasoning.* NeurIPS, 2022. (Self-training on a model's own verifier-confirmed solutions — the method family instantiated by the self-harvest loop.)
+- T. Anthony, Z. Tian, D. Barber. *Thinking Fast and Slow with Deep Learning and Tree Search.* NeurIPS, 2017. (Expert iteration — the bootstrap-on-own-solutions loop.)
+- Z. Shao, P. Wang, Q. Zhu, et al. *DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models.* 2024. (Introduces GRPO, the verifier-reward policy-gradient method discussed in §9.)
+- The ECDSA.fail reversible-circuit challenge. <https://ecdsa.fail>.
