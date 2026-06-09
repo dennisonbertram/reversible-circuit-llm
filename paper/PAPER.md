@@ -1,6 +1,15 @@
 # Verifier-Backed Tool Use and the Limits of Self-Harvest Expert Iteration in Small-Model Reversible-Circuit Synthesis
 
-> **TL;DR**
+> **In plain language**
+>
+> We tried to teach a small AI two things: (1) to design a particular kind of reversible computer circuit — the sort quantum algorithms are built from — and (2) to *teach itself* to get better by practicing on problems it can check its own answers to.
+>
+> - **The self-teaching idea did not work.** After two rounds of practicing on its own correct answers, the AI was no better on fresh problems than when it started (about 58% solved, both before and after). Training a model on answers it can already produce mostly teaches it what it already knows.
+> - **One thing worked well, and it wasn't size.** Without a "scratchpad" tool, a small model and a model five times larger were *equally bad* (both ~5%) — the hard part isn't knowledge, it's keeping track of the work in your head. Give the AI a scratchpad that shows what's still wrong after each step, and it starts solving real problems; only *then* does a bigger model pull ahead.
+> - **It is dangerously easy to fool yourself.** An early "breakthrough" on the hardest problems turned out to be a mirage caused by testing on too few examples. Testing properly made it disappear. The most useful takeaway of the whole project is a discipline: *measure with enough samples, or you will believe things that aren't true.*
+> - **Bottom line:** the model is genuinely useful on the easier cases, the self-improvement idea hit a real wall, and we're publishing the honest result — including the parts that didn't pan out. The model and the full write-up are free and open (links below).
+
+> **TL;DR (technical)**
 > - On one-shot reversible-circuit synthesis without a tool, a 1.5B and a 7B model of the same family achieve an identical 4.8% solve rate; the limiting factor is symbolic execution of the running circuit, not model capacity.
 > - A state-externalizing tool that renders the residual after each gate removes this bottleneck, and only with the tool does scale appear to become decisive: a trained 1.5B (Qwen2.5-Coder-1.5B) caps at register width n=4, whereas a trained 8B (Qwen3-8B) reaches n=5. Because the two tool-trained models are of different families and generations, this single comparison confounds scale with family and is suggestive rather than a controlled ablation.
 > - Self-harvest expert iteration — supervised fine-tuning on the model's own verifier-confirmed solutions — produces no detectable held-out improvement: base, iter-1, and iter-2 differ by at most 1.2 points overall (58.1 / 56.9 / 58.1% at best-of-5), within per-band sampling error at n=40.
