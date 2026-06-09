@@ -31,3 +31,6 @@ infra/
 
 # Flywheel cumulative training sets (large, regenerate via flywheel/combine.py)
 data/fly*.jsonl
+
+# paper tooling venv
+.paper_venv/
